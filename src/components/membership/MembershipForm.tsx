@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast"; // Corrected import path
+import { useToast } from "@/hooks/use-toast"; 
 import { Send } from "lucide-react";
 
 const industryTypes = [
@@ -103,7 +104,7 @@ export default function MembershipForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>Full Name <span className="text-destructive">*</span></FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your full name" {...field} />
                   </FormControl>
@@ -116,7 +117,7 @@ export default function MembershipForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email Address</FormLabel>
+                  <FormLabel>Email Address <span className="text-destructive">*</span></FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="Enter your email address" {...field} />
                   </FormControl>
@@ -129,7 +130,7 @@ export default function MembershipForm() {
               name="contactNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact Number</FormLabel>
+                  <FormLabel>Contact Number <span className="text-destructive">*</span></FormLabel>
                   <FormControl>
                     <Input type="tel" placeholder="Enter your contact number" {...field} />
                   </FormControl>
@@ -142,7 +143,7 @@ export default function MembershipForm() {
               name="industryType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Industry Type</FormLabel>
+                  <FormLabel>Industry Type <span className="text-destructive">*</span></FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -166,7 +167,7 @@ export default function MembershipForm() {
               name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Message / Area of Interest</FormLabel>
+                  <FormLabel>Message / Area of Interest <span className="text-destructive">*</span></FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Tell us a bit about your interest or any specific questions you have."
