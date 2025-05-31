@@ -1,4 +1,5 @@
 import { Anchor, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Hero() {
   return (
@@ -21,10 +22,10 @@ export default function Hero() {
           </p>
           
           <div className="hero-buttons">
-            <button className="btn btn-primary">
+            <Link href="/apply-for-membership" className="btn btn-primary">
               Apply for Membership
               <ArrowRight className="btn-icon" />
-            </button>
+            </Link>
             
             <button className="btn btn-outline">
               Sign In
