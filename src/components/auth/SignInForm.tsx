@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,6 +45,7 @@ const defaultValues: Partial<SignInFormValues> = {
 
 export default function SignInForm() {
   const { toast } = useToast();
+  const router = useRouter(); // Initialize router
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInFormSchema),
     defaultValues,
@@ -56,10 +58,10 @@ export default function SignInForm() {
     console.log("Sign in data:", data);
     toast({
       title: "Signed In Successfully!",
-      description: "Welcome back!",
+      description: "Redirecting to dashboard...",
     });
     // form.reset(); // Optionally reset form
-    // router.push('/dashboard'); // Redirect to dashboard or desired page
+    router.push('/dashboard'); // Redirect to dashboard
   }
 
   return (
@@ -118,3 +120,5 @@ export default function SignInForm() {
     </Card>
   );
 }
+
+    
