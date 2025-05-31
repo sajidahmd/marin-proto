@@ -112,8 +112,8 @@ export default function Footer() {
               <ul>
                 <li><Link href="#problems" onClick={(e) => handleNavLinkClick(e, '#problems')}>Problem/Solution</Link></li>
                 <li><Link href="#features" onClick={(e) => handleNavLinkClick(e, '#features')}>Key Features</Link></li>
-                <li><Link href="/pricing" onClick={(e) => handleNavLinkClick(e, '/pricing')}>Pricing</Link></li>
-                <li><Link href="/case-studies" onClick={(e) => handleNavLinkClick(e, '/case-studies')}>Case Studies</Link></li>
+                <li><Link href="/" onClick={()=>console.log("het gelp")}>Pricing</Link></li>
+                <li><Link href="/" onClick={()=>console.log("het gelp")}>Case Studies</Link></li>
               </ul>
             </div>
             
@@ -121,8 +121,8 @@ export default function Footer() {
               <h4>Support</h4>
               <ul>
                 <li><Link href="#faq" onClick={(e) => handleNavLinkClick(e, '#faq')}>FAQ</Link></li>
-                <li><Link href="/documentation" onClick={(e) => handleNavLinkClick(e, '/documentation')}>Documentation</Link></li>
-                <li><Link href="/help-center" onClick={(e) => handleNavLinkClick(e, '/help-center')}>Help Center</Link></li>
+                <li><Link href="/" onClick={()=>console.log("het gelp")}>Documentation</Link></li>
+                <li><Link href="/" onClick={()=>console.log("het gelp")}>Help Center</Link></li>
                 <li><a href="#chat-widget" onClick={handleChatLinkClick}>Live Chat</a></li>
               </ul>
             </div>
@@ -130,10 +130,10 @@ export default function Footer() {
             <div className="sitemap-column">
               <h4>Legal</h4>
               <ul>
-                <li><Link href="/privacy-policy" onClick={(e) => handleNavLinkClick(e, '/privacy-policy')}>Privacy Policy</Link></li>
-                <li><Link href="/terms-of-service" onClick={(e) => handleNavLinkClick(e, '/terms-of-service')}>Terms of Service</Link></li>
-                <li><Link href="/cookie-policy" onClick={(e) => handleNavLinkClick(e, '/cookie-policy')}>Cookie Policy</Link></li>
-                <li><Link href="/gdpr" onClick={(e) => handleNavLinkClick(e, '/gdpr')}>GDPR</Link></li>
+                <li><Link href="/" onClick={()=>console.log("het gelp")}>Privacy Policy</Link></li>
+                <li><Link href="/" onClick={()=>console.log("het gelp")}>Terms of Service</Link></li>
+                <li><Link href="/" onClick={()=>console.log("het gelp")}>Cookie Policy</Link></li>
+                <li><Link href="/" onClick={()=>console.log("het gelp")}>GDPR</Link></li>
               </ul>
             </div>
           </div>
