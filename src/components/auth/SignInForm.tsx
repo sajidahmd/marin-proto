@@ -91,7 +91,7 @@ export default function SignInForm() {
                 <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel>Password</FormLabel>
-                    <Link href="#" className="text-sm text-primary hover:underline">
+                    <Link href="/forgot-password" className="text-sm text-primary hover:underline">
                       Forgot Password?
                     </Link>
                   </div>
@@ -108,6 +108,12 @@ export default function SignInForm() {
             </Button>
           </form>
         </Form>
+        <div className="mt-4 text-center text-sm">
+          Don&apos;t have an account?{' '}
+          <Link href="/apply-for-membership" className="text-primary hover:underline">
+            Apply for Membership
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );
