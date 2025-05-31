@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast"; // Corrected import path
 import { Send } from "lucide-react";
 
 const industryTypes = [
@@ -45,7 +45,7 @@ const membershipFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  contactNumber: z.string().min(10, { // Basic validation for length
+  contactNumber: z.string().min(10, { 
     message: "Contact number must be at least 10 digits.",
   }).regex(/^\+?[0-9\s\-()]{10,}$/, { message: "Please enter a valid contact number."}),
   industryType: z.enum(industryTypes, {
@@ -63,7 +63,6 @@ const membershipFormSchema = z.object({
 
 type MembershipFormValues = z.infer<typeof membershipFormSchema>;
 
-// Default values for the form
 const defaultValues: Partial<MembershipFormValues> = {
   name: "",
   email: "",
@@ -76,11 +75,10 @@ export default function MembershipForm() {
   const form = useForm<MembershipFormValues>({
     resolver: zodResolver(membershipFormSchema),
     defaultValues,
-    mode: "onChange", // Validate on change for better UX
+    mode: "onChange", 
   });
 
   async function onSubmit(data: MembershipFormValues) {
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log(data);
     toast({
@@ -88,7 +86,7 @@ export default function MembershipForm() {
       description: "Thank you for applying. We will review your application and get back to you soon.",
       variant: "default", 
     });
-    form.reset(); // Reset form after successful submission
+    form.reset(); 
   }
 
   return (
@@ -183,7 +181,7 @@ export default function MembershipForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full btn-gradient" disabled={form.formState.isSubmitting}>
+            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? "Submitting..." : "Submit Application"}
               {!form.formState.isSubmitting && <Send className="ml-2 h-4 w-4" />}
             </Button>
