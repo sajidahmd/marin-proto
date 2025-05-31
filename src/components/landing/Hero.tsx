@@ -27,9 +27,9 @@ export default function Hero() {
               <ArrowRight className="btn-icon" />
             </Link>
             
-            <button className="btn btn-outline">
+            <Link href="/sign-in" className="btn btn-outline">
               Sign In
-            </button>
+            </Link>
           </div>
         </div>
       </div>
