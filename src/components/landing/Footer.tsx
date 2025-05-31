@@ -1,6 +1,9 @@
 "use client";
 import Link from 'next/link';
 import { Anchor } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
+import type { MouseEvent } from 'react';
+import { useCallback } from 'react';
 
 // Inline SVGs for social icons as lucide-react doesn't have brand icons
 const FacebookIcon = () => (
@@ -29,31 +32,58 @@ const TelegramIcon = () => (
 
 
 export default function Footer() {
-  const handleNavLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetId: string) => {
-    if (targetId.startsWith("#")) {
-      e.preventDefault();
-      const targetSection = document.querySelector(targetId);
-      if (targetSection) {
-        const navbarHeight = (document.querySelector('.navbar') as HTMLElement)?.offsetHeight || 80;
-        const offsetTop = (targetSection as HTMLElement).offsetTop - navbarHeight;
-        window.scrollTo({
-          top: offsetTop,
-          behavior: 'smooth'
-        });
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleNavLinkClick = useCallback(
+    (e: MouseEvent<HTMLAnchorElement>, targetIdWithHash: string) => {
+      if (targetIdWithHash.startsWith("#")) {
+        e.preventDefault();
+        if (pathname === '/') {
+          const targetSection = document.querySelector(targetIdWithHash);
+          if (targetSection) {
+            const navbarHeight = (document.querySelector('.navbar') as HTMLElement)?.offsetHeight || 80;
+            const offsetTop = (targetSection as HTMLElement).offsetTop - navbarHeight;
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth'
+            });
+          }
+        } else {
+          router.push('/' + targetIdWithHash);
+        }
       }
+    },
+    [pathname, router]
+  );
+
+  const handleChatLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const chatToggle = document.getElementById('chat-toggle');
+    if (chatToggle) {
+        // Open chat if not already open, or simply bring focus if complex logic is not desired
+        const chatPopup = document.getElementById('chat-popup');
+        if (chatPopup && !chatPopup.classList.contains('active')) {
+            chatToggle.click();
+        } else if (chatPopup && chatPopup.classList.contains('active')) {
+            // Optionally, if already open, maybe scroll to it or do nothing
+            // For a fixed widget, scrolling is not very effective
+        } else {
+           chatToggle.click(); // Fallback if active class check is tricky
+        }
     }
-    // For external links or non-hash links, default behavior is fine.
   };
+
 
   return (
     <footer className="footer">
       <div className="container">
         <div className="footer-content">
           <div className="footer-brand">
-            <div className="footer-logo">
+            <Link href="/" className="footer-logo">
               <Anchor className="logo-icon" />
               <span className="logo-text">Marine Marketing</span>
-            </div>
+            </Link>
             <p className="footer-description">
               Streamline your marine marketing operations with our comprehensive system designed for industry leaders.
             </p>
@@ -82,8 +112,8 @@ export default function Footer() {
               <ul>
                 <li><Link href="#problems" onClick={(e) => handleNavLinkClick(e, '#problems')}>Problem/Solution</Link></li>
                 <li><Link href="#features" onClick={(e) => handleNavLinkClick(e, '#features')}>Key Features</Link></li>
-                <li><Link href="#">Pricing</Link></li>
-                <li><Link href="#">Case Studies</Link></li>
+                <li><Link href="/pricing" onClick={(e) => handleNavLinkClick(e, '/pricing')}>Pricing</Link></li>
+                <li><Link href="/case-studies" onClick={(e) => handleNavLinkClick(e, '/case-studies')}>Case Studies</Link></li>
               </ul>
             </div>
             
@@ -91,19 +121,19 @@ export default function Footer() {
               <h4>Support</h4>
               <ul>
                 <li><Link href="#faq" onClick={(e) => handleNavLinkClick(e, '#faq')}>FAQ</Link></li>
-                <li><Link href="#">Documentation</Link></li>
-                <li><Link href="#">Help Center</Link></li>
-                <li><Link href="#">Live Chat</Link></li>
+                <li><Link href="/documentation" onClick={(e) => handleNavLinkClick(e, '/documentation')}>Documentation</Link></li>
+                <li><Link href="/help-center" onClick={(e) => handleNavLinkClick(e, '/help-center')}>Help Center</Link></li>
+                <li><a href="#chat-widget" onClick={handleChatLinkClick}>Live Chat</a></li>
               </ul>
             </div>
             
             <div className="sitemap-column">
               <h4>Legal</h4>
               <ul>
-                <li><Link href="#">Privacy Policy</Link></li>
-                <li><Link href="#">Terms of Service</Link></li>
-                <li><Link href="#">Cookie Policy</Link></li>
-                <li><Link href="#">GDPR</Link></li>
+                <li><Link href="/privacy-policy" onClick={(e) => handleNavLinkClick(e, '/privacy-policy')}>Privacy Policy</Link></li>
+                <li><Link href="/terms-of-service" onClick={(e) => handleNavLinkClick(e, '/terms-of-service')}>Terms of Service</Link></li>
+                <li><Link href="/cookie-policy" onClick={(e) => handleNavLinkClick(e, '/cookie-policy')}>Cookie Policy</Link></li>
+                <li><Link href="/gdpr" onClick={(e) => handleNavLinkClick(e, '/gdpr')}>GDPR</Link></li>
               </ul>
             </div>
           </div>

@@ -1,37 +1,45 @@
 "use client";
 import Link from 'next/link';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Anchor, Menu } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
-  const handleNavLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetId: string) => {
-    e.preventDefault();
-    const targetSection = document.querySelector(targetId);
-    if (targetSection) {
-      const navbarHeight = (document.querySelector('.navbar') as HTMLElement)?.offsetHeight || 80;
-      const offsetTop = (targetSection as HTMLElement).offsetTop - navbarHeight;
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth'
-      });
+  const handleNavLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, targetIdWithHash: string) => {
+    e.preventDefault(); 
+
+    if (pathname === '/') {
+      const targetSection = document.querySelector(targetIdWithHash);
+      if (targetSection) {
+        const navbarHeight = (document.querySelector('.navbar') as HTMLElement)?.offsetHeight || 80;
+        const offsetTop = (targetSection as HTMLElement).offsetTop - navbarHeight;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: 'smooth'
+        });
+      }
+    } else {
+      router.push('/' + targetIdWithHash);
     }
-    setMenuOpen(false);
-  }, []);
+    setMenuOpen(false); 
+  }, [pathname, router]);
 
   return (
     <nav className="navbar">
       <div className="container">
         <div className="nav-content">
-          <div className="nav-logo">
+          <Link href="/" className="nav-logo" onClick={() => setMenuOpen(false)}>
             <Anchor className="logo-icon" />
             <span className="logo-text">Marine Marketing</span>
-          </div>
+          </Link>
           
           <ul className={`nav-menu ${menuOpen ? 'nav-menu-open' : ''}`}>
             <li><Link href="#hero" className="nav-link" onClick={(e) => handleNavLinkClick(e, '#hero')}>Home</Link></li>
