@@ -16,7 +16,8 @@ export default function DashboardHomePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+      {/* The h1 for Dashboard title is now part of DashboardHeader or implicitly handled by breadcrumb */}
+      {/* <h1 className="text-3xl font-bold text-foreground">Dashboard</h1> */}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatCard title="Companies" value="12" icon={Briefcase} />

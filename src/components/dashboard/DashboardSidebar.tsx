@@ -10,9 +10,9 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuSub, // This is now the Collapsible Root
-  SidebarMenuSubContent, // This is Collapsible Content
-  SidebarMenuSubNavList, // This is the UL for sub-items
+  SidebarMenuSub, 
+  SidebarMenuSubContent, 
+  SidebarMenuSubNavList, 
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarFooter,
@@ -34,6 +34,7 @@ import {
   KeyRound,
   ShieldAlert,
   ClipboardList,
+  ChevronDown,
 } from 'lucide-react';
 
 const mainNavItems = [
@@ -82,7 +83,7 @@ export default function DashboardSidebar() {
                 >
                   <a>
                     <item.icon />
-                    <span>{item.label}</span>
+                    <span className="flex-1">{item.label}</span>
                   </a>
                 </SidebarMenuButton>
               </Link>
@@ -91,12 +92,13 @@ export default function DashboardSidebar() {
           
           <SidebarMenuSub defaultOpen={pathname.startsWith('/dashboard/admin')}>
             <SidebarMenuButton 
-              isSubTrigger // This tells SidebarMenuButton to render as CollapsibleTrigger
+              isSubTrigger 
               isActive={pathname.startsWith('/dashboard/admin')}
               tooltip={{children: "Admin"}}
             >
               <ShieldCheck />
-              <span>Admin</span>
+              <span className="flex-1">Admin</span>
+              <ChevronDown className="h-4 w-4 shrink-0 text-sidebar-foreground/70 transition-transform duration-200 group-data-[state=open]:rotate-180 group-data-[collapsible=icon]:hidden" />
             </SidebarMenuButton>
             <SidebarMenuSubContent>
               <SidebarMenuSubNavList>
@@ -135,7 +137,7 @@ export default function DashboardSidebar() {
                     >
                         <a>
                             <Settings />
-                            <span>Settings</span>
+                            <span className="flex-1">Settings</span>
                         </a>
                     </SidebarMenuButton>
                  </Link>
@@ -143,7 +145,7 @@ export default function DashboardSidebar() {
             <SidebarMenuItem>
                 <SidebarMenuButton onClick={() => {console.log('Logout'); setOpenMobile(false);}} tooltip={{children: "Log Out"}}>
                     <LogOut />
-                    <span>Log Out</span>
+                    <span className="flex-1">Log Out</span>
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
@@ -151,3 +153,5 @@ export default function DashboardSidebar() {
     </Sidebar>
   );
 }
+
+    

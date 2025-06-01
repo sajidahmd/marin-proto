@@ -5,7 +5,7 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
-import * as CollapsiblePrimitive from "@radix-ui/react-collapsible" // Import Radix Collapsible
+import * as CollapsiblePrimitive from "@radix-ui/react-collapsible" 
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -20,9 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-// Collapsible components are now typically imported from their own file,
-// but for this change, we'll use CollapsiblePrimitive directly or assume they are available.
-// For a cleaner setup, they'd be imported from "@/components/ui/collapsible"
+
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -257,7 +255,7 @@ Sidebar.displayName = "Sidebar"
 const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
->(({ className, onClick, ...props }, ref) => {
+>(({ className, onClick, children, ...props }, ref) => {
   const { toggleSidebar } = useSidebar()
 
   return (
@@ -266,14 +264,14 @@ const SidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn("h-7 w-7", className)}
+      className={cn("h-8 w-8 md:h-9 md:w-9", className)}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
       }}
       {...props}
     >
-      <PanelLeft />
+      {children || <PanelLeft />}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
@@ -317,7 +315,7 @@ const SidebarInset = React.forwardRef<
     <main
       ref={ref}
       className={cn(
-        "relative flex min-h-svh flex-1 flex-col bg-background",
+        "relative flex min-h-svh flex-1 flex-col", // Removed bg-background, will be handled by children
         "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
         className
       )}
@@ -506,7 +504,7 @@ const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem"
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span]:group-data-[collapsible=icon]:hidden [&>svg~span]:group-data-[collapsible=icon]:hidden [&>svg~svg]:group-data-[collapsible=icon]:hidden [&>svg]:size-4 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -554,7 +552,7 @@ const SidebarMenuButton = React.forwardRef<
     const { isMobile, state } = useSidebar()
 
     const button = (
-      // @ts-expect-error Temp fix for Comp type; CollapsibleTrigger also takes button props.
+      
       <Comp
         ref={ref}
         data-sidebar="menu-button"
@@ -680,7 +678,7 @@ const SidebarMenuSkeleton = React.forwardRef<
 })
 SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton"
 
-// New Collapsible components for submenus
+
 const SidebarMenuSub = React.forwardRef<
   React.ElementRef<typeof CollapsiblePrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Root>
@@ -698,7 +696,7 @@ const SidebarMenuSubContent = React.forwardRef<
     ref={ref}
     className={cn(
       "overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-      "group-data-[collapsible=icon]:hidden", // Hide content when main sidebar is collapsed to icon
+      "group-data-[collapsible=icon]:hidden", 
       className
     )}
     {...props}
@@ -708,7 +706,7 @@ const SidebarMenuSubContent = React.forwardRef<
 ));
 SidebarMenuSubContent.displayName = "SidebarMenuSubContent";
 
-// Renamed old SidebarMenuSub (ul) to SidebarMenuSubNavList
+
 const SidebarMenuSubNavList = React.forwardRef<
   HTMLUListElement,
   React.ComponentProps<"ul">
@@ -733,14 +731,14 @@ const SidebarMenuSubItem = React.forwardRef<
 SidebarMenuSubItem.displayName = "SidebarMenuSubItem"
 
 const SidebarMenuSubButton = React.forwardRef<
-  HTMLAnchorElement, // Assuming it's mostly used with <a> via asChild
-  React.ComponentProps<"a"> & { // Changed from button to a for default typing with asChild pattern
+  HTMLAnchorElement, 
+  React.ComponentProps<"a"> & { 
     asChild?: boolean
     size?: "sm" | "md"
     isActive?: boolean
   }
 >(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
-  const Comp = asChild ? Slot : "a" // Default to 'a' if not asChild, or Slot if asChild
+  const Comp = asChild ? Slot : "a" 
 
   return (
     <Comp
@@ -753,7 +751,7 @@ const SidebarMenuSubButton = React.forwardRef<
         "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
         size === "sm" && "text-xs",
         size === "md" && "text-sm",
-        "group-data-[collapsible=icon]:hidden", // This should apply if the main sidebar is icon-only
+        "group-data-[collapsible=icon]:hidden", 
         className
       )}
       {...props}
@@ -779,9 +777,9 @@ export {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSkeleton,
-  SidebarMenuSub, // New Collapsible Root
-  SidebarMenuSubContent, // New Collapsible Content
-  SidebarMenuSubNavList, // Old ul, renamed
+  SidebarMenuSub, 
+  SidebarMenuSubContent, 
+  SidebarMenuSubNavList, 
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarProvider,
@@ -790,3 +788,5 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+    
