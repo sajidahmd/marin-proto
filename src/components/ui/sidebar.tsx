@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Tooltip,
@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
@@ -201,6 +202,7 @@ const Sidebar = React.forwardRef<
             }
             side={side}
           >
+            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
         </Sheet>
@@ -315,7 +317,7 @@ const SidebarInset = React.forwardRef<
     <main
       ref={ref}
       className={cn(
-        "relative flex min-h-svh flex-1 flex-col", // Removed bg-background, will be handled by children
+        "relative flex min-h-svh flex-1 flex-col", 
         "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
         className
       )}
@@ -530,7 +532,7 @@ const SidebarMenuButton = React.forwardRef<
   React.ComponentProps<"button"> & {
     asChild?: boolean
     isActive?: boolean
-    isSubTrigger?: boolean
+    isSubTrigger?: boolean // Keep this prop
     tooltip?: string | React.ComponentProps<typeof TooltipContent>
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(
@@ -538,13 +540,13 @@ const SidebarMenuButton = React.forwardRef<
     {
       asChild = false,
       isActive = false,
-      isSubTrigger,
+      isSubTrigger, // Destructure it here
       variant = "default",
       size = "default",
       tooltip,
       className,
       children,
-      ...props
+      ...props // isSubTrigger is now excluded from ...props
     },
     ref
   ) => {
@@ -559,7 +561,7 @@ const SidebarMenuButton = React.forwardRef<
         data-size={size}
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
-        {...props}
+        {...props} 
       >
         {children}
       </Comp>
@@ -680,19 +682,19 @@ SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton"
 
 
 const SidebarMenuSub = React.forwardRef<
-  React.ElementRef<typeof CollapsiblePrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Root>
+  React.ElementRef<typeof Collapsible>,
+  React.ComponentPropsWithoutRef<typeof Collapsible>
 >(({ className, ...props }, ref) => (
-  <CollapsiblePrimitive.Root ref={ref} className={cn("relative", className)} {...props} />
+  <Collapsible ref={ref} className={cn("relative", className)} {...props} />
 ))
 SidebarMenuSub.displayName = "SidebarMenuSub"
 
 
 const SidebarMenuSubContent = React.forwardRef<
-  React.ElementRef<typeof CollapsiblePrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Content>
+  React.ElementRef<typeof CollapsibleContent>,
+  React.ComponentPropsWithoutRef<typeof CollapsibleContent>
 >(({ className, children, ...props }, ref) => (
-  <CollapsiblePrimitive.Content
+  <CollapsibleContent
     ref={ref}
     className={cn(
       "overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
@@ -702,7 +704,7 @@ const SidebarMenuSubContent = React.forwardRef<
     {...props}
   >
     {children}
-  </CollapsiblePrimitive.Content>
+  </CollapsibleContent>
 ));
 SidebarMenuSubContent.displayName = "SidebarMenuSubContent";
 
@@ -788,5 +790,3 @@ export {
   SidebarTrigger,
   useSidebar,
 }
-
-    
