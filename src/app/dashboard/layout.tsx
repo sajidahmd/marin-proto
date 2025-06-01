@@ -13,7 +13,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <SidebarProvider defaultOpen>
-      <div className="flex min-h-screen bg-muted/40">
+      <div className="flex w-full min-h-screen bg-muted/40">
         <DashboardSidebar />
         <SidebarInset>
           <DashboardHeader />

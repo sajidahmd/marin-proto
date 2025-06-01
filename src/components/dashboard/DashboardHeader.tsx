@@ -7,7 +7,7 @@ import { PanelLeft, Home as HomeIcon, ChevronRight } from 'lucide-react';
 
 export default function DashboardHeader() {
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4">
       <SidebarTrigger> {/* Removed sm:hidden to make it visible on all screen sizes */}
         <PanelLeft className="h-5 w-5" />
         <span className="sr-only">Toggle Menu</span>
@@ -20,14 +20,8 @@ export default function DashboardHeader() {
               className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <HomeIcon className="h-4 w-4" />
-              Home
+              Dashboard
             </Link>
-          </li>
-          <li>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </li>
-          <li>
-            <span className="text-sm font-semibold text-foreground">Dashboard</span>
           </li>
         </ol>
       </nav>
