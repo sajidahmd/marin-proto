@@ -10,7 +10,9 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuSub,
+  SidebarMenuSub, // This is now the Collapsible Root
+  SidebarMenuSubContent, // This is Collapsible Content
+  SidebarMenuSubNavList, // This is the UL for sub-items
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarFooter,
@@ -30,10 +32,9 @@ import {
   LogOut,
   Settings,
   KeyRound,
-  ShieldAlert, // Changed from ShieldCheck to avoid exact duplicate if parent uses it
+  ShieldAlert,
   ClipboardList,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 const mainNavItems = [
   { href: '/dashboard', label: 'Home', icon: Home },
@@ -56,7 +57,7 @@ const adminSubNavItems = [
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
-  const { setOpenMobile, open } = useSidebar();
+  const { setOpenMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" variant="sidebar" side="left">
@@ -90,30 +91,34 @@ export default function DashboardSidebar() {
           
           <SidebarMenuSub defaultOpen={pathname.startsWith('/dashboard/admin')}>
             <SidebarMenuButton 
-              isSubTrigger 
+              isSubTrigger // This tells SidebarMenuButton to render as CollapsibleTrigger
               isActive={pathname.startsWith('/dashboard/admin')}
               tooltip={{children: "Admin"}}
             >
               <ShieldCheck />
               <span>Admin</span>
             </SidebarMenuButton>
-            {adminSubNavItems.map((subItem) => (
-              <SidebarMenuSubItem key={subItem.label}>
-                <Link href={subItem.href} passHref legacyBehavior>
-                  <SidebarMenuSubButton
-                    asChild
-                    isActive={pathname === subItem.href}
-                    onClick={() => setOpenMobile(false)}
-                    tooltip={{children: subItem.label}}
-                  >
-                    <a>
-                      <subItem.icon className="size-3.5" /> {/* Smaller icon for subitems */}
-                      <span>{subItem.label}</span>
-                    </a>
-                  </SidebarMenuSubButton>
-                </Link>
-              </SidebarMenuSubItem>
-            ))}
+            <SidebarMenuSubContent>
+              <SidebarMenuSubNavList>
+                {adminSubNavItems.map((subItem) => (
+                  <SidebarMenuSubItem key={subItem.label}>
+                    <Link href={subItem.href} passHref legacyBehavior>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={pathname === subItem.href}
+                        onClick={() => setOpenMobile(false)}
+                        tooltip={{children: subItem.label}}
+                      >
+                        <a>
+                          <subItem.icon className="size-3.5" />
+                          <span>{subItem.label}</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </Link>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSubNavList>
+            </SidebarMenuSubContent>
           </SidebarMenuSub>
 
         </SidebarMenu>
@@ -121,7 +126,7 @@ export default function DashboardSidebar() {
       <SidebarFooter className="p-2 border-t border-sidebar-border">
         <SidebarMenu>
             <SidebarMenuItem>
-                 <Link href="/dashboard/settings" passHref legacyBehavior> {/* Updated path */}
+                 <Link href="/dashboard/settings" passHref legacyBehavior>
                     <SidebarMenuButton 
                         asChild 
                         onClick={() => setOpenMobile(false)} 
