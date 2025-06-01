@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -538,6 +539,7 @@ const SidebarMenuButton = React.forwardRef<
   React.ComponentProps<"button"> & {
     asChild?: boolean
     isActive?: boolean
+    isSubTrigger?: boolean // Added isSubTrigger here
     tooltip?: string | React.ComponentProps<typeof TooltipContent>
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(
@@ -545,6 +547,7 @@ const SidebarMenuButton = React.forwardRef<
     {
       asChild = false,
       isActive = false,
+      isSubTrigger, // Destructured isSubTrigger
       variant = "default",
       size = "default",
       tooltip,
