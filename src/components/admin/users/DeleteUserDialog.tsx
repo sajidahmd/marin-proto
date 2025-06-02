@@ -44,14 +44,10 @@ export default function DeleteUserDialog({
         <AlertDialogFooter>
           <AlertDialogCancel
             onClick={onClose}
-            // Apply primary button styling. The base AlertDialogCancel applies "outline",
-            // but twMerge will correctly override with "default" styles.
-            // Also, ensure focus-visible styles are applied, though they should be inherited.
             className={cn(
               buttonVariants({ variant: "default" }),
-              // Explicitly add standard focus-visible classes to ensure visibility if needed,
-              // though buttonVariants should handle this.
-              // "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              "hover:bg-primary" // Override hover effect to keep primary background
+              // Standard focus-visible classes are inherited from buttonVariants
             )}
           >
             Cancel
