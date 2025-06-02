@@ -2,16 +2,9 @@
 "use client"
 
 import * as React from "react"
-import {
-  ColumnDef,
-  SortingState,
-  VisibilityState,
+import type {
+  Table as TanstackTable,
   flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel, // Import for global filter if needed later
-  useReactTable,
 } from "@tanstack/react-table"
 
 import {
@@ -24,65 +17,31 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ChevronDown, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, SlidersHorizontal } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 
-
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps<TData> {
+  table: TanstackTable<TData> // Accept table instance as a prop
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    getFilteredRowModel: getFilteredRowModel(), 
-    state: {
-      sorting,
-      columnVisibility,
-    },
-    initialState: {
-        pagination: {
-            pageSize: 10, 
-        }
-    }
-  })
-
+export function DataTable<TData>({
+  table,
+}: DataTableProps<TData>) {
   return (
     <div className="space-y-4">
-      <div className="rounded-md"> {/* Removed border from here, Card will provide it */}
+      <div className="rounded-md">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -111,7 +70,7 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -119,7 +78,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 p-4">
+      <div className="flex items-center justify-between space-x-2 p-4 border-t">
         <div className="flex-1 text-sm text-muted-foreground">
             {table.getFilteredRowModel().rows.length} row(s).
         </div>
@@ -191,5 +150,3 @@ export function DataTable<TData, TValue>({
     </div>
   )
 }
-
-    

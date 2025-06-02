@@ -37,10 +37,10 @@ export const columns: ColumnDef<User>[] = [
         return (
             <div className="flex items-center gap-3">
                 {user.avatar ? (
-                    <img 
-                        src={user.avatar} 
-                        alt={user.name} 
-                        data-ai-hint="user avatar" 
+                    <img
+                        src={user.avatar}
+                        alt={user.name}
+                        data-ai-hint="user avatar"
                         className="h-8 w-8 rounded-full object-cover"
                     />
                 ) : (
@@ -52,7 +52,7 @@ export const columns: ColumnDef<User>[] = [
             </div>
         )
     },
-    enableHiding: false, // Keep name column always visible
+    enableHiding: true,
   },
   {
     accessorKey: "email",
@@ -68,6 +68,7 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       )
     },
+    enableHiding: true,
   },
   {
     accessorKey: "role",
@@ -83,6 +84,7 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       )
     },
+    enableHiding: true,
   },
   {
     accessorKey: "status",
@@ -113,6 +115,7 @@ export const columns: ColumnDef<User>[] = [
         </Badge>
       )
     },
+    enableHiding: true,
   },
   {
     id: "actions",
@@ -121,17 +124,17 @@ export const columns: ColumnDef<User>[] = [
       // const user = row.original; // If needed for action handlers
       return (
         <div className="flex items-center justify-end space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="text-blue-600 border-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-900/50 dark:hover:text-blue-300 transform transition-transform duration-150 ease-in-out hover:scale-105"
             onClick={() => console.log("Edit user:", row.original.id)}
           >
             <Edit className="mr-1 h-3.5 w-3.5" /> Edit
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:border-red-400 dark:hover:bg-red-900/50 dark:hover:text-red-300 transform transition-transform duration-150 ease-in-out hover:scale-105"
             onClick={() => console.log("Delete user:", row.original.id)}
           >
