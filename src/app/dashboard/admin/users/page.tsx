@@ -4,14 +4,22 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, PlusCircle } from "lucide-react";
-import { columns, type User } from "./columns"; 
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Search, PlusCircle, ListFilter, X, SlidersHorizontal } from "lucide-react";
+import { columns, type User } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
-
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 // Expanded sample data for pagination testing
-const users: User[] = [
+const usersData: User[] = [
   { id: "usr_1", name: "Alice Wonderland", email: "alice@example.com", role: "Admin", status: "Active", avatar: "https://placehold.co/32x32.png" },
   { id: "usr_2", name: "Bob The Builder", email: "bob@example.com", role: "Manager", status: "Active", avatar: "https://placehold.co/32x32.png" },
   { id: "usr_3", name: "Charlie Brown", email: "charlie@example.com", role: "Employee", status: "Inactive" },
@@ -54,38 +62,174 @@ const users: User[] = [
   { id: "usr_40", name: "James Gordon", email: "james@example.com", role: "Admin", status: "Active", avatar: "https://placehold.co/32x32.png" },
 ];
 
+const userRoles: User['role'][] = ["Admin", "Manager", "Employee", "Viewer"];
+const userStatuses: User['status'][] = ["Active", "Inactive"];
+
 export default function UsersPage() {
-  const [data, setData] = React.useState<User[]>(users); // For potential future client-side filtering/updates
+  const [selectedStatuses, setSelectedStatuses] = React.useState<Set<User['status']>>(new Set());
+  const [selectedRoles, setSelectedRoles] = React.useState<Set<User['role']>>(new Set());
+
+  const handleStatusChange = (status: User['status'], checked: boolean) => {
+    setSelectedStatuses(prev => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(status);
+      } else {
+        next.delete(status);
+      }
+      return next;
+    });
+  };
+
+  const handleRoleChange = (role: User['role'], checked: boolean) => {
+    setSelectedRoles(prev => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(role);
+      } else {
+        next.delete(role);
+      }
+      return next;
+    });
+  };
+
+  const resetFilters = () => {
+    setSelectedStatuses(new Set());
+    setSelectedRoles(new Set());
+  };
+
+  const filteredUsers = React.useMemo(() => {
+    return usersData.filter(user => {
+      const statusMatch = selectedStatuses.size === 0 || selectedStatuses.has(user.status);
+      const roleMatch = selectedRoles.size === 0 || selectedRoles.has(user.role);
+      return statusMatch && roleMatch;
+    });
+  }, [usersData, selectedStatuses, selectedRoles]);
+
+  const activeFilterCount = selectedStatuses.size + selectedRoles.size;
 
   return (
     <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-foreground">User List</h1>
+        <p className="text-muted-foreground">Manage your users and their roles here.</p>
+      </div>
+
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold text-foreground">Users</h1>
-        <div className="flex w-full md:w-auto items-center space-x-2">
-          <div className="relative flex-grow md:flex-grow-0">
+        <div className="flex flex-grow items-center gap-2 flex-wrap">
+          <div className="relative flex-grow sm:flex-grow-0 min-w-[200px] sm:min-w-[280px] md:w-auto">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search users..."
-              className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[300px]"
-              // value={(table.getColumn("email")?.getFilterValue() as string) ?? ""} // Example for future filtering
-              // onChange={(event) => table.getColumn("email")?.setFilterValue(event.target.value)}
+              placeholder="Filter users..."
+              className="w-full rounded-lg bg-background pl-8"
             />
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-1">
+                <ListFilter className="h-3.5 w-3.5" />
+                Status
+                {selectedStatuses.size > 0 && (
+                  <Badge variant="secondary" className="ml-1 rounded-sm px-1 font-normal lg:hidden">
+                    {selectedStatuses.size}
+                  </Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel>Filter by status</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {userStatuses.map((status) => (
+                <DropdownMenuCheckboxItem
+                  key={status}
+                  checked={selectedStatuses.has(status)}
+                  onCheckedChange={(checked) => handleStatusChange(status, !!checked)}
+                >
+                  {status}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-1">
+                <ListFilter className="h-3.5 w-3.5" />
+                Role
+                {selectedRoles.size > 0 && (
+                  <Badge variant="secondary" className="ml-1 rounded-sm px-1 font-normal lg:hidden">
+                    {selectedRoles.size}
+                  </Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel>Filter by role</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {userRoles.map((role) => (
+                <DropdownMenuCheckboxItem
+                  key={role}
+                  checked={selectedRoles.has(role)}
+                  onCheckedChange={(checked) => handleRoleChange(role, !!checked)}
+                >
+                  {role}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {activeFilterCount > 0 && (
+            <Button variant="ghost" onClick={resetFilters} className="text-muted-foreground hover:text-foreground">
+              Reset ({activeFilterCount})
+            </Button>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {/* Placeholder for Invite User button if needed based on image */}
+          {/* <Button variant="outline"><Mail className="mr-2 h-4 w-4" /> Invite User</Button> */}
           <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> Create User
+            <PlusCircle className="mr-2 h-4 w-4" /> Add User
           </Button>
         </div>
       </div>
 
+      {activeFilterCount > 0 && (
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-sm text-muted-foreground">Active filters:</span>
+          {Array.from(selectedStatuses).map(status => (
+            <Badge key={`status-${status}`} variant="secondary" className="py-1 px-2 gap-1">
+              Status: {status}
+              <button onClick={() => handleStatusChange(status, false)} className="rounded-full hover:bg-background/50 p-0.5 focus:outline-none focus:ring-1 focus:ring-ring">
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+          {Array.from(selectedRoles).map(role => (
+            <Badge key={`role-${role}`} variant="secondary" className="py-1 px-2 gap-1">
+              Role: {role}
+              <button onClick={() => handleRoleChange(role, false)} className="rounded-full hover:bg-background/50 p-0.5 focus:outline-none focus:ring-1 focus:ring-ring">
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+        </div>
+      )}
+
       <Card>
-        <CardHeader>
-          <CardTitle>User List</CardTitle>
+        <CardHeader className="border-b p-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">User List</CardTitle>
+             {/* DataTable already includes a View/Columns dropdown */}
+          </div>
+          <CardDescription className="text-sm">
+            Overview of all users in the system.
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={data} />
+        <CardContent className="p-0">
+          <DataTable columns={columns} data={filteredUsers} />
         </CardContent>
       </Card>
     </div>
   );
 }
+
+    

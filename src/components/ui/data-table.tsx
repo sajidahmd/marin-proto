@@ -10,6 +10,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  getFilteredRowModel, // Import for global filter if needed later
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -26,6 +27,8 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -35,7 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ChevronDown, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from "lucide-react"
+import { ChevronDown, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, SlidersHorizontal } from "lucide-react"
 
 
 interface DataTableProps<TData, TValue> {
@@ -49,7 +52,6 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  // Removed rowSelection state
 
   const table = useReactTable({
     data,
@@ -59,29 +61,30 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    // Removed onRowSelectionChange
+    getFilteredRowModel: getFilteredRowModel(), 
     state: {
       sorting,
       columnVisibility,
-      // Removed rowSelection from state
     },
     initialState: {
         pagination: {
-            pageSize: 10, // Default page size
+            pageSize: 10, 
         }
     }
   })
 
   return (
     <div className="space-y-4">
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end p-4 border-b">
             <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                <SlidersHorizontal className="mr-2 h-4 w-4" /> View
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-[150px]">
+                <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 {table
                 .getAllColumns()
                 .filter((column) => column.getCanHide())
@@ -102,7 +105,7 @@ export function DataTable<TData, TValue>({
             </DropdownMenuContent>
             </DropdownMenu>
         </div>
-      <div className="rounded-md border">
+      <div className="rounded-md"> {/* Removed border from here, Card will provide it */}
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -127,7 +130,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"} // This can remain, doesn't hurt if selection isn't active
+                  data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -146,9 +149,11 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        {/* Removed the selected row count display */}
-        <div className="flex flex-1 items-center space-x-6 lg:space-x-8 justify-end"> {/* Added justify-end */}
+      <div className="flex items-center justify-between space-x-2 p-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+            {table.getFilteredRowModel().rows.length} row(s).
+        </div>
+        <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2">
             <p className="text-sm font-medium">Rows per page</p>
             <Select
@@ -170,7 +175,7 @@ export function DataTable<TData, TValue>({
             </Select>
           </div>
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            Page {table.getPageCount() > 0 ? table.getState().pagination.pageIndex + 1 : 0} of{" "}
             {table.getPageCount()}
           </div>
           <div className="flex items-center space-x-2">
@@ -216,3 +221,5 @@ export function DataTable<TData, TValue>({
     </div>
   )
 }
+
+    
