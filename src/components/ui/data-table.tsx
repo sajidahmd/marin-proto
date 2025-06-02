@@ -49,7 +49,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({}) // Required for selection, can be empty if not used for selection column
+  // Removed rowSelection state
 
   const table = useReactTable({
     data,
@@ -59,11 +59,11 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    // Removed onRowSelectionChange
     state: {
       sorting,
       columnVisibility,
-      rowSelection,
+      // Removed rowSelection from state
     },
     initialState: {
         pagination: {
@@ -127,7 +127,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && "selected"} // This can remain, doesn't hurt if selection isn't active
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -146,12 +146,9 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected. 
-        </div>
-        <div className="flex items-center space-x-6 lg:space-x-8">
+      <div className="flex items-center justify-end space-x-2 py-4">
+        {/* Removed the selected row count display */}
+        <div className="flex flex-1 items-center space-x-6 lg:space-x-8 justify-end"> {/* Added justify-end */}
           <div className="flex items-center space-x-2">
             <p className="text-sm font-medium">Rows per page</p>
             <Select
