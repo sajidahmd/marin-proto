@@ -11,14 +11,14 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  VisibilityState, // Keep for potential future use, but not for View dropdown
+  VisibilityState,
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Search, UserRoundPlus, ListFilter, X } from "lucide-react"; // Removed SlidersHorizontal
-import { createUserColumns, type User } from "./columns"; // Changed to createUserColumns
+import { Card, CardContent } from "@/components/ui/card";
+import { Search, UserRoundPlus, ListFilter, X, SlidersHorizontal } from "lucide-react";
+import { createUserColumns, type User } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import {
   DropdownMenu,
@@ -31,6 +31,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import AddUserModal, { type AddUserFormValues } from "@/components/admin/users/AddUserModal";
 import EditUserModal, { type EditUserFormValues } from "@/components/admin/users/EditUserModal";
+import DeleteUserDialog from "@/components/admin/users/DeleteUserDialog"; // Import DeleteUserDialog
 import { useToast } from "@/hooks/use-toast";
 
 const initialUsersData: User[] = [
@@ -89,12 +90,17 @@ export default function UsersPage() {
   const [isAddUserModalOpen, setIsAddUserModalOpen] = React.useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = React.useState(false);
   const [currentUserToEdit, setCurrentUserToEdit] = React.useState<User | null>(null);
+  
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [userToDelete, setUserToDelete] = React.useState<User | null>(null);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
+   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+
 
   const handleStatusChange = (status: User['status'], checked: boolean) => {
     setSelectedStatuses(prev => {
@@ -175,20 +181,36 @@ export default function UsersPage() {
     });
   };
   
-  // Placeholder for delete functionality
-  const handleDeleteUser = (userId: string) => {
-    console.log("Attempting to delete user:", userId);
-    toast({
-      title: "Delete Action (Not Implemented)",
-      description: `Would delete user with ID: ${userId}. This is a placeholder.`,
-      variant: "destructive"
-    });
+  const handleOpenDeleteDialog = (userId: string) => {
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      setUserToDelete(user);
+      setIsDeleteDialogOpen(true);
+    }
   };
 
+  const handleCloseDeleteDialog = () => {
+    setUserToDelete(null);
+    setIsDeleteDialogOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!userToDelete) return;
+    setUsers(prevUsers => prevUsers.filter(user => user.id !== userToDelete.id));
+    toast({
+      title: "User Deleted",
+      description: `User ${userToDelete.name} has been successfully deleted.`,
+      variant: "default",
+    });
+    handleCloseDeleteDialog();
+  };
+
+
   const columns = React.useMemo(
-    () => createUserColumns({ onEdit: handleOpenEditModal, onDelete: handleDeleteUser }),
+    () => createUserColumns({ onEdit: handleOpenEditModal, onDelete: handleOpenDeleteDialog }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [users] // Re-memoize if users array changes, e.g., after adding/editing a user
+    [] // Removed users dependency to prevent re-render loops with table instance.
+       // If columns need to react to users changes, a more specific dependency is needed.
   );
 
   const filteredUsers = React.useMemo(() => {
@@ -216,9 +238,11 @@ export default function UsersPage() {
     state: {
       sorting,
       pagination,
+      columnVisibility,
     },
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -228,7 +252,7 @@ export default function UsersPage() {
     manualSorting: false,
   });
 
-  const activeFilterCount = selectedStatuses.size + selectedRoles.size;
+  const activeFilterCount = selectedStatuses.size + selectedRoles.size + (searchInput ? 1 : 0);
 
   return (
     <div className="space-y-6">
@@ -318,9 +342,10 @@ export default function UsersPage() {
             </Button>
           )}
         </div>
+         {/* "View" Dropdown for column visibility - Removed per previous request */}
       </div>
 
-      {activeFilterCount > 0 && (
+      {activeFilterCount > 0 && !searchInput && (selectedStatuses.size > 0 || selectedRoles.size > 0) && (
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-sm text-muted-foreground">Active filters:</span>
           {Array.from(selectedStatuses).map(status => (
@@ -364,6 +389,12 @@ export default function UsersPage() {
         onClose={handleCloseEditModal}
         onSave={handleUpdateUser}
         userToEdit={currentUserToEdit}
+      />
+      <DeleteUserDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        onConfirm={handleConfirmDelete}
+        userName={userToDelete?.name || ""}
       />
     </div>
   );
