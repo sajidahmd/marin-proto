@@ -11,6 +11,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button, buttonVariants } from "@/components/ui/button"; // Import buttonVariants
+import { cn } from "@/lib/utils"; // Import cn
 import { AlertTriangle } from "lucide-react";
 
 interface DeleteUserDialogProps {
@@ -40,17 +42,23 @@ export default function DeleteUserDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel 
+          <AlertDialogCancel
             onClick={onClose}
-            // Explicitly add standard focus-visible classes to ensure visibility.
-            // These are typically inherited via buttonVariants, but this reinforces them.
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            // Apply primary button styling. The base AlertDialogCancel applies "outline",
+            // but twMerge will correctly override with "default" styles.
+            // Also, ensure focus-visible styles are applied, though they should be inherited.
+            className={cn(
+              buttonVariants({ variant: "default" }),
+              // Explicitly add standard focus-visible classes to ensure visibility if needed,
+              // though buttonVariants should handle this.
+              // "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            )}
           >
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className={buttonVariants({ variant: "destructive" })} // Use buttonVariants for consistency
           >
             Delete
           </AlertDialogAction>
