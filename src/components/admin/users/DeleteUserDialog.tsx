@@ -45,8 +45,7 @@ export default function DeleteUserDialog({
           <AlertDialogCancel
             onClick={onClose}
             className={cn(
-              buttonVariants({ variant: "default" }),
-              "hover:bg-primary" // Override hover effect to keep primary background
+              buttonVariants({ variant: "default" })
               // Standard focus-visible classes are inherited from buttonVariants
             )}
           >
