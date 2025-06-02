@@ -11,14 +11,14 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  VisibilityState,
+  VisibilityState, // Keep for potential future use, but not for View dropdown
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Search, UserRoundPlus, ListFilter, X, SlidersHorizontal } from "lucide-react";
-import { columns, type User } from "./columns";
+import { Search, UserRoundPlus, ListFilter, X } from "lucide-react"; // Removed SlidersHorizontal
+import { createUserColumns, type User } from "./columns"; // Changed to createUserColumns
 import { DataTable } from "@/components/ui/data-table";
 import {
   DropdownMenu,
@@ -30,49 +30,50 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import AddUserModal, { type AddUserFormValues } from "@/components/admin/users/AddUserModal";
+import EditUserModal, { type EditUserFormValues } from "@/components/admin/users/EditUserModal";
 import { useToast } from "@/hooks/use-toast";
 
 const initialUsersData: User[] = [
   { id: "usr_1", name: "Alice Wonderland", username: "alicew", email: "alice@example.com", role: "Admin", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "123-456-7890" },
   { id: "usr_2", name: "Bob The Builder", username: "bob_b", email: "bob@example.com", role: "Manager", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "234-567-8901" },
   { id: "usr_3", name: "Charlie Brown", username: "charlieb", email: "charlie@example.com", role: "Employee", status: "Inactive", phoneNumber: "" },
-  { id: "usr_4", name: "Diana Prince", username: "wonder_d", email: "diana@example.com", role: "Employee", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_5", name: "Edward Scissorhands", username: "ed_scissor", email: "edward@example.com", role: "Viewer", status: "Active" },
-  { id: "usr_6", name: "Fiona Gallagher", username: "fiona_g", email: "fiona@example.com", role: "Manager", status: "Inactive", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_7", name: "George Jetson", username: "georgej", email: "george@example.com", role: "Admin", status: "Active" },
-  { id: "usr_8", name: "Hannah Montana", username: "hannah_m", email: "hannah@example.com", role: "Employee", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_9", name: "Iris West", username: "irisw", email: "iris@example.com", role: "Viewer", status: "Inactive" },
-  { id: "usr_10", name: "Jack Sparrow", username: "captain_jack", email: "jack@example.com", role: "Manager", status: "Active" },
-  { id: "usr_11", name: "Kara Danvers", username: "supergirl", email: "kara@example.com", role: "Admin", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_12", name: "Leo Fitz", username: "leof", email: "leo@example.com", role: "Employee", status: "Inactive" },
-  { id: "usr_13", name: "Monica Geller", username: "monica_g", email: "monica@example.com", role: "Manager", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_14", name: "Ned Flanders", username: "ned_f", email: "ned@example.com", role: "Viewer", status: "Active" },
-  { id: "usr_15", name: "Olivia Pope", username: "olivia_p", email: "olivia@example.com", role: "Admin", status: "Inactive" },
-  { id: "usr_16", name: "Peter Parker", username: "spidey", email: "peter@example.com", role: "Employee", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_17", name: "Quinn Fabray", username: "quinn_f", email: "quinn@example.com", role: "Employee", status: "Active" },
-  { id: "usr_18", name: "Rachel Green", username: "rachel_g", email: "rachel@example.com", role: "Manager", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_19", name: "Steve Rogers", username: "cap_america", email: "steve@example.com", role: "Admin", status: "Inactive" },
-  { id: "usr_20", name: "Tony Stark", username: "ironman", email: "tony@example.com", role: "Admin", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_21", name: "Ursula Buffay", username: "ursula_b", email: "ursula@example.com", role: "Viewer", status: "Active" },
-  { id: "usr_22", name: "Victor Stone", username: "cyborg", email: "victor@example.com", role: "Employee", status: "Inactive", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_23", name: "Wanda Maximoff", username: "scarlet_w", email: "wanda@example.com", role: "Manager", status: "Active" },
-  { id: "usr_24", name: "Xavier Charles", username: "prof_x", email: "xavier@example.com", role: "Admin", status: "Active" },
-  { id: "usr_25", name: "Yvonne Strahovski", username: "yvonne_s", email: "yvonne@example.com", role: "Employee", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_26", name: "Zelda Spellman", username: "zelda_s", email: "zelda@example.com", role: "Manager", status: "Inactive" },
-  { id: "usr_27", name: "Arthur Curry", username: "aquaman", email: "arthur@example.com", role: "Viewer", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_28", name: "Bruce Wayne", username: "batman", email: "bruce@example.com", role: "Admin", status: "Active" },
-  { id: "usr_29", name: "Clark Kent", username: "superman", email: "clark@example.com", role: "Employee", status: "Inactive" },
-  { id: "usr_30", name: "Selina Kyle", username: "catwoman", email: "selina@example.com", role: "Manager", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_31", name: "Barry Allen", username: "flash", email: "barry@example.com", role: "Employee", status: "Active" },
-  { id: "usr_32", name: "Hal Jordan", username: "green_lantern", email: "hal@example.com", role: "Admin", status: "Inactive", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_33", name: "Jessica Cruz", username: "jess_cruz_gl", email: "jessica@example.com", role: "Viewer", status: "Active" },
-  { id: "usr_34", name: "John Stewart", username: "john_stewart_gl", email: "john@example.com", role: "Manager", status: "Active" },
-  { id: "usr_35", name: "Kyle Rayner", username: "kyle_r_gl", email: "kyle@example.com", role: "Employee", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_36", name: "Lois Lane", username: "lois_l", email: "lois@example.com", role: "Admin", status: "Inactive" },
-  { id: "usr_37", name: "Oliver Queen", username: "green_arrow", email: "oliver@example.com", role: "Manager", status: "Active" },
-  { id: "usr_38", name: "Pamela Isley", username: "poison_ivy", email: "pamela@example.com", role: "Viewer", status: "Active", avatar: "https://placehold.co/32x32.png" },
-  { id: "usr_39", name: "Harvey Dent", username: "two_face", email: "harvey@example.com", role: "Employee", status: "Inactive" },
-  { id: "usr_40", name: "James Gordon", username: "commissioner_g", email: "james@example.com", role: "Admin", status: "Active", avatar: "https://placehold.co/32x32.png" },
+  { id: "usr_4", name: "Diana Prince", username: "wonder_d", email: "diana@example.com", role: "Employee", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "345-678-9012" },
+  { id: "usr_5", name: "Edward Scissorhands", username: "ed_scissor", email: "edward@example.com", role: "Viewer", status: "Active", phoneNumber: "456-789-0123" },
+  { id: "usr_6", name: "Fiona Gallagher", username: "fiona_g", email: "fiona@example.com", role: "Manager", status: "Inactive", avatar: "https://placehold.co/32x32.png", phoneNumber: "567-890-1234" },
+  { id: "usr_7", name: "George Jetson", username: "georgej", email: "george@example.com", role: "Admin", status: "Active", phoneNumber: "678-901-2345" },
+  { id: "usr_8", name: "Hannah Montana", username: "hannah_m", email: "hannah@example.com", role: "Employee", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "789-012-3456" },
+  { id: "usr_9", name: "Iris West", username: "irisw", email: "iris@example.com", role: "Viewer", status: "Inactive", phoneNumber: "890-123-4567" },
+  { id: "usr_10", name: "Jack Sparrow", username: "captain_jack", email: "jack@example.com", role: "Manager", status: "Active", phoneNumber: "901-234-5678" },
+  { id: "usr_11", name: "Kara Danvers", username: "supergirl", email: "kara@example.com", role: "Admin", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "012-345-6789" },
+  { id: "usr_12", name: "Leo Fitz", username: "leof", email: "leo@example.com", role: "Employee", status: "Inactive", phoneNumber: "112-233-4455" },
+  { id: "usr_13", name: "Monica Geller", username: "monica_g", email: "monica@example.com", role: "Manager", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "223-344-5566" },
+  { id: "usr_14", name: "Ned Flanders", username: "ned_f", email: "ned@example.com", role: "Viewer", status: "Active", phoneNumber: "334-455-6677" },
+  { id: "usr_15", name: "Olivia Pope", username: "olivia_p", email: "olivia@example.com", role: "Admin", status: "Inactive", phoneNumber: "445-566-7788" },
+  { id: "usr_16", name: "Peter Parker", username: "spidey", email: "peter@example.com", role: "Employee", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "556-677-8899" },
+  { id: "usr_17", name: "Quinn Fabray", username: "quinn_f", email: "quinn@example.com", role: "Employee", status: "Active", phoneNumber: "667-788-9900" },
+  { id: "usr_18", name: "Rachel Green", username: "rachel_g", email: "rachel@example.com", role: "Manager", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "778-899-0011" },
+  { id: "usr_19", name: "Steve Rogers", username: "cap_america", email: "steve@example.com", role: "Admin", status: "Inactive", phoneNumber: "889-900-1122" },
+  { id: "usr_20", name: "Tony Stark", username: "ironman", email: "tony@example.com", role: "Admin", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "990-011-2233" },
+  { id: "usr_21", name: "Ursula Buffay", username: "ursula_b", email: "ursula@example.com", role: "Viewer", status: "Active", phoneNumber: "001-122-3344" },
+  { id: "usr_22", name: "Victor Stone", username: "cyborg", email: "victor@example.com", role: "Employee", status: "Inactive", avatar: "https://placehold.co/32x32.png", phoneNumber: "121-232-3435" },
+  { id: "usr_23", name: "Wanda Maximoff", username: "scarlet_w", email: "wanda@example.com", role: "Manager", status: "Active", phoneNumber: "232-343-4546" },
+  { id: "usr_24", name: "Xavier Charles", username: "prof_x", email: "xavier@example.com", role: "Admin", status: "Active", phoneNumber: "343-454-5657" },
+  { id: "usr_25", name: "Yvonne Strahovski", username: "yvonne_s", email: "yvonne@example.com", role: "Employee", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "454-565-6768" },
+  { id: "usr_26", name: "Zelda Spellman", username: "zelda_s", email: "zelda@example.com", role: "Manager", status: "Inactive", phoneNumber: "565-676-7879" },
+  { id: "usr_27", name: "Arthur Curry", username: "aquaman", email: "arthur@example.com", role: "Viewer", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "676-787-8980" },
+  { id: "usr_28", name: "Bruce Wayne", username: "batman", email: "bruce@example.com", role: "Admin", status: "Active", phoneNumber: "787-898-9091" },
+  { id: "usr_29", name: "Clark Kent", username: "superman", email: "clark@example.com", role: "Employee", status: "Inactive", phoneNumber: "898-909-0102" },
+  { id: "usr_30", name: "Selina Kyle", username: "catwoman", email: "selina@example.com", role: "Manager", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "909-010-1213" },
+  { id: "usr_31", name: "Barry Allen", username: "flash", email: "barry@example.com", role: "Employee", status: "Active", phoneNumber: "010-121-2324" },
+  { id: "usr_32", name: "Hal Jordan", username: "green_lantern", email: "hal@example.com", role: "Admin", status: "Inactive", avatar: "https://placehold.co/32x32.png", phoneNumber: "120-231-3425" },
+  { id: "usr_33", name: "Jessica Cruz", username: "jess_cruz_gl", email: "jessica@example.com", role: "Viewer", status: "Active", phoneNumber: "231-342-4536" },
+  { id: "usr_34", name: "John Stewart", username: "john_stewart_gl", email: "john@example.com", role: "Manager", status: "Active", phoneNumber: "342-453-5647" },
+  { id: "usr_35", name: "Kyle Rayner", username: "kyle_r_gl", email: "kyle@example.com", role: "Employee", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "453-564-6758" },
+  { id: "usr_36", name: "Lois Lane", username: "lois_l", email: "lois@example.com", role: "Admin", status: "Inactive", phoneNumber: "564-675-7869" },
+  { id: "usr_37", name: "Oliver Queen", username: "green_arrow", email: "oliver@example.com", role: "Manager", status: "Active", phoneNumber: "675-786-8970" },
+  { id: "usr_38", name: "Pamela Isley", username: "poison_ivy", email: "pamela@example.com", role: "Viewer", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "786-897-9081" },
+  { id: "usr_39", name: "Harvey Dent", username: "two_face", email: "harvey@example.com", role: "Employee", status: "Inactive", phoneNumber: "897-908-0192" },
+  { id: "usr_40", name: "James Gordon", username: "commissioner_g", email: "james@example.com", role: "Admin", status: "Active", avatar: "https://placehold.co/32x32.png", phoneNumber: "908-019-1203" },
 ];
 
 const userRoles: User['role'][] = ["Admin", "Manager", "Employee", "Viewer"];
@@ -84,7 +85,10 @@ export default function UsersPage() {
   const [searchInput, setSearchInput] = React.useState("");
   const [selectedStatuses, setSelectedStatuses] = React.useState<Set<User['status']>>(new Set());
   const [selectedRoles, setSelectedRoles] = React.useState<Set<User['role']>>(new Set());
+  
   const [isAddUserModalOpen, setIsAddUserModalOpen] = React.useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = React.useState(false);
+  const [currentUserToEdit, setCurrentUserToEdit] = React.useState<User | null>(null);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [pagination, setPagination] = React.useState<PaginationState>({
@@ -127,8 +131,7 @@ export default function UsersPage() {
       email: data.email,
       phoneNumber: data.phoneNumber || undefined,
       role: data.role,
-      status: 'Inactive', // Default status
-      // Avatar can be generated based on initials if needed, or left undefined
+      status: 'Inactive', 
     };
     setUsers(prevUsers => [newUser, ...prevUsers]);
     setIsAddUserModalOpen(false);
@@ -138,6 +141,55 @@ export default function UsersPage() {
     });
   };
 
+  const handleOpenEditModal = (user: User) => {
+    setCurrentUserToEdit(user);
+    setIsEditUserModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setCurrentUserToEdit(null);
+    setIsEditUserModalOpen(false);
+  };
+  
+  const handleUpdateUser = (data: EditUserFormValues) => {
+    if (!currentUserToEdit) return;
+
+    setUsers(prevUsers =>
+      prevUsers.map(user =>
+        user.id === currentUserToEdit.id
+          ? {
+              ...user,
+              name: `${data.firstName} ${data.lastName}`,
+              username: data.username,
+              email: data.email,
+              phoneNumber: data.phoneNumber || undefined,
+              role: data.role,
+            }
+          : user
+      )
+    );
+    handleCloseEditModal();
+    toast({
+      title: "User Updated",
+      description: `User ${data.firstName} ${data.lastName} has been successfully updated.`,
+    });
+  };
+  
+  // Placeholder for delete functionality
+  const handleDeleteUser = (userId: string) => {
+    console.log("Attempting to delete user:", userId);
+    toast({
+      title: "Delete Action (Not Implemented)",
+      description: `Would delete user with ID: ${userId}. This is a placeholder.`,
+      variant: "destructive"
+    });
+  };
+
+  const columns = React.useMemo(
+    () => createUserColumns({ onEdit: handleOpenEditModal, onDelete: handleDeleteUser }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [users] // Re-memoize if users array changes, e.g., after adding/editing a user
+  );
 
   const filteredUsers = React.useMemo(() => {
     let currentUsers = users;
@@ -171,7 +223,7 @@ export default function UsersPage() {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    manualPagination: false,
+    manualPagination: false, 
     manualFiltering: true, 
     manualSorting: false,
   });
@@ -306,6 +358,12 @@ export default function UsersPage() {
         isOpen={isAddUserModalOpen}
         onClose={() => setIsAddUserModalOpen(false)}
         onSave={handleAddNewUser}
+      />
+      <EditUserModal
+        isOpen={isEditUserModalOpen}
+        onClose={handleCloseEditModal}
+        onSave={handleUpdateUser}
+        userToEdit={currentUserToEdit}
       />
     </div>
   );
