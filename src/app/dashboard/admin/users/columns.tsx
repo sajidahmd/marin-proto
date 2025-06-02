@@ -10,8 +10,10 @@ import { cn } from "@/lib/utils"
 // Matches the type in page.tsx
 export type User = {
   id: string;
-  name: string;
+  name: string; // Derived from firstName + lastName
   email: string;
+  username: string;
+  phoneNumber?: string;
   role: 'Admin' | 'Manager' | 'Employee' | 'Viewer';
   status: 'Active' | 'Inactive';
   avatar?: string;
