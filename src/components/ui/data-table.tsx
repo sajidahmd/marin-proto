@@ -4,8 +4,8 @@
 import * as React from "react"
 import type {
   Table as TanstackTable,
-  flexRender,
 } from "@tanstack/react-table"
+import { flexRender } from "@tanstack/react-table" // Added missing import
 
 import {
   Table,
