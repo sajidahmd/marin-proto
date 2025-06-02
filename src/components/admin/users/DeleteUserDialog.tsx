@@ -43,11 +43,8 @@ export default function DeleteUserDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel
-            onClick={onClose}
-            className={cn(
-              buttonVariants({ variant: "default" })
-              // Standard focus-visible classes are inherited from buttonVariants
-            )}
+              onClick={onClose}
+              className="bg-black text-white hover:bg-black hover:text-white"
           >
             Cancel
           </AlertDialogCancel>
