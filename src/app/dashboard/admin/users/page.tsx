@@ -11,13 +11,13 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  getFilteredRowModel, // Required for client-side filtering if `globalFilter` were used
+  getFilteredRowModel, 
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Search, PlusCircle, ListFilter, X, UserRoundPlus, SlidersHorizontal } from "lucide-react";
+import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
+import { Search, UserRoundPlus, ListFilter, X, SlidersHorizontal } from "lucide-react";
 import { columns, type User } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import {
@@ -78,7 +78,7 @@ const userRoles: User['role'][] = ["Admin", "Manager", "Employee", "Viewer"];
 const userStatuses: User['status'][] = ["Active", "Inactive"];
 
 export default function UsersPage() {
-  const [searchInput, setSearchInput] = React.useState(""); // For visual search input
+  const [searchInput, setSearchInput] = React.useState(""); 
   const [selectedStatuses, setSelectedStatuses] = React.useState<Set<User['status']>>(new Set());
   const [selectedRoles, setSelectedRoles] = React.useState<Set<User['role']>>(new Set());
 
@@ -96,6 +96,7 @@ export default function UsersPage() {
       else next.delete(status);
       return next;
     });
+     setPagination(prev => ({ ...prev, pageIndex: 0 }));
   };
 
   const handleRoleChange = (role: User['role'], checked: boolean) => {
@@ -105,17 +106,19 @@ export default function UsersPage() {
       else next.delete(role);
       return next;
     });
+    setPagination(prev => ({ ...prev, pageIndex: 0 }));
   };
 
   const resetFilters = () => {
     setSelectedStatuses(new Set());
     setSelectedRoles(new Set());
     setSearchInput("");
+    setPagination(prev => ({ ...prev, pageIndex: 0 }));
   };
 
   const filteredUsers = React.useMemo(() => {
     let users = usersData;
-    // Client-side search (visual only as per requirement, but this makes it visually work)
+    
     if (searchInput) {
         users = users.filter(user =>
             user.name.toLowerCase().includes(searchInput.toLowerCase()) ||
@@ -129,7 +132,7 @@ export default function UsersPage() {
       users = users.filter(user => selectedRoles.has(user.role));
     }
     return users;
-  }, [usersData, selectedStatuses, selectedRoles, searchInput]);
+  }, [selectedStatuses, selectedRoles, searchInput]);
 
   const table = useReactTable({
     data: filteredUsers,
@@ -145,10 +148,10 @@ export default function UsersPage() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(), // Keep for potential Tanstack internal filtering if needed
-    manualPagination: false, // We are handling pagination via Tanstack state
-    manualFiltering: true, // We are handling filtering outside Tanstack table's global filter
-    manualSorting: false, // We are using Tanstack for sorting
+    getFilteredRowModel: getFilteredRowModel(), 
+    manualPagination: false, 
+    manualFiltering: true, 
+    manualSorting: false, 
   });
 
   const activeFilterCount = selectedStatuses.size + selectedRoles.size;
@@ -175,7 +178,10 @@ export default function UsersPage() {
               type="search"
               placeholder="Filter users..."
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              onChange={(e) => {
+                setSearchInput(e.target.value);
+                setPagination(prev => ({ ...prev, pageIndex: 0 }));
+              }}
               className="w-full rounded-lg bg-background pl-8"
             />
           </div>
@@ -232,7 +238,7 @@ export default function UsersPage() {
             </DropdownMenuContent>
           </DropdownMenu>
           {activeFilterCount > 0 && (
-            <Button variant="ghost" onClick={resetFilters} className="text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" onClick={resetFilters} className="text-muted-foreground hover:text-foreground h-9 px-3">
               Reset
               <X className="ml-1 h-4 w-4" />
             </Button>
@@ -252,7 +258,7 @@ export default function UsersPage() {
                     .getAllColumns()
                     .filter(
                         (column) =>
-                        typeof column.accessorFn !== "undefined" && column.getCanHide()
+                        typeof column.columnDef.accessorFn !== "undefined" && column.getCanHide()
                     )
                     .map((column) => {
                         return (
@@ -277,7 +283,11 @@ export default function UsersPage() {
           {Array.from(selectedStatuses).map(status => (
             <Badge key={`status-${status}`} variant="secondary" className="py-1 px-2 gap-1">
               Status: {status}
-              <button onClick={() => handleStatusChange(status, false)} className="rounded-full hover:bg-muted-foreground/20 p-0.5 focus:outline-none focus:ring-1 focus:ring-ring">
+              <button 
+                onClick={() => handleStatusChange(status, false)} 
+                className="rounded-full hover:bg-muted-foreground/20 p-0.5 focus:outline-none focus:ring-1 focus:ring-ring"
+                aria-label={`Remove status filter: ${status}`}
+              >
                 <X className="h-3 w-3" />
               </button>
             </Badge>
@@ -285,7 +295,11 @@ export default function UsersPage() {
           {Array.from(selectedRoles).map(role => (
             <Badge key={`role-${role}`} variant="secondary" className="py-1 px-2 gap-1">
               Role: {role}
-              <button onClick={() => handleRoleChange(role, false)} className="rounded-full hover:bg-muted-foreground/20 p-0.5 focus:outline-none focus:ring-1 focus:ring-ring">
+              <button 
+                onClick={() => handleRoleChange(role, false)} 
+                className="rounded-full hover:bg-muted-foreground/20 p-0.5 focus:outline-none focus:ring-1 focus:ring-ring"
+                aria-label={`Remove role filter: ${role}`}
+                >
                 <X className="h-3 w-3" />
               </button>
             </Badge>
@@ -300,3 +314,5 @@ export default function UsersPage() {
     </div>
   );
 }
+
+      
