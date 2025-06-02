@@ -1,38 +1,16 @@
 
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Search, PlusCircle, Edit, Trash2, MoreHorizontal } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Search, PlusCircle } from "lucide-react";
+import { columns, type User } from "./columns"; 
+import { DataTable } from "@/components/ui/data-table";
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: 'Admin' | 'Manager' | 'Employee' | 'Viewer';
-  status: 'Active' | 'Inactive';
-  avatar?: string;
-};
 
+// Sample data (same as before, ensure User type matches columns.tsx)
 const users: User[] = [
   { id: "usr_1", name: "Alice Wonderland", email: "alice@example.com", role: "Admin", status: "Active", avatar: "https://placehold.co/32x32.png" },
   { id: "usr_2", name: "Bob The Builder", email: "bob@example.com", role: "Manager", status: "Active", avatar: "https://placehold.co/32x32.png" },
@@ -44,6 +22,8 @@ const users: User[] = [
 ];
 
 export default function UsersPage() {
+  const [data, setData] = React.useState<User[]>(users); // For potential future client-side filtering/updates
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -55,6 +35,8 @@ export default function UsersPage() {
               type="search"
               placeholder="Search users..."
               className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[300px]"
+              // value={(table.getColumn("email")?.getFilterValue() as string) ?? ""} // Example for future filtering
+              // onChange={(event) => table.getColumn("email")?.setFilterValue(event.target.value)}
             />
           </div>
           <Button>
@@ -64,78 +46,11 @@ export default function UsersPage() {
       </div>
 
       <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead className="hidden lg:table-cell">Email</TableHead>
-                <TableHead className="hidden md:table-cell">Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      {user.avatar ? (
-                        <img 
-                          src={user.avatar} 
-                          alt={user.name} 
-                          data-ai-hint="user avatar" 
-                          className="h-8 w-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-muted-foreground text-xs font-semibold">
-                          {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                        </span>
-                      )}
-                      <div>
-                        <div className="font-medium">{user.name}</div>
-                        <div className="text-sm text-muted-foreground lg:hidden">{user.email}</div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden lg:table-cell">{user.email}</TableCell>
-                  <TableCell className="hidden md:table-cell">{user.role}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={cn(
-                        "capitalize px-2 py-0.5 text-xs",
-                        user.status === 'Active'
-                          ? "bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800/30 dark:text-green-400 border border-green-200 dark:border-green-700"
-                          : "bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700/30 dark:text-gray-400 border border-gray-200 dark:border-gray-600"
-                      )}
-                    >
-                      {user.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">User actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          <Edit className="mr-2 h-4 w-4" /> Update
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive dark:focus:text-destructive-foreground">
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardHeader>
+          <CardTitle>User List</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable columns={columns} data={data} />
         </CardContent>
       </Card>
     </div>
