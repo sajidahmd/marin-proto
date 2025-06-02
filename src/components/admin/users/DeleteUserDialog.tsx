@@ -11,7 +11,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button"; // Keep for AlertDialogAction styling if needed
 import { AlertTriangle } from "lucide-react";
 
 interface DeleteUserDialogProps {
@@ -41,7 +40,14 @@ export default function DeleteUserDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel 
+            onClick={onClose}
+            // Explicitly add standard focus-visible classes to ensure visibility.
+            // These are typically inherited via buttonVariants, but this reinforces them.
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
