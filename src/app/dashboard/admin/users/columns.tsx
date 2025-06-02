@@ -124,7 +124,7 @@ export const columns: ColumnDef<User>[] = [
           <Button 
             variant="outline" 
             size="sm" 
-            className="text-blue-600 border-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-900/50 dark:hover:text-blue-300"
+            className="text-blue-600 border-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-900/50 dark:hover:text-blue-300 transform transition-transform duration-150 ease-in-out hover:scale-105"
             onClick={() => console.log("Edit user:", row.original.id)}
           >
             <Edit className="mr-1 h-3.5 w-3.5" /> Edit
@@ -132,7 +132,7 @@ export const columns: ColumnDef<User>[] = [
           <Button 
             variant="outline" 
             size="sm" 
-            className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:border-red-400 dark:hover:bg-red-900/50 dark:hover:text-red-300"
+            className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:border-red-400 dark:hover:bg-red-900/50 dark:hover:text-red-300 transform transition-transform duration-150 ease-in-out hover:scale-105"
             onClick={() => console.log("Delete user:", row.original.id)}
           >
             <Trash2 className="mr-1 h-3.5 w-3.5" /> Delete
