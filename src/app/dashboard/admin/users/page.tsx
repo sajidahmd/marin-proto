@@ -5,7 +5,6 @@ import * as React from "react";
 import {
   ColumnDef,
   SortingState,
-  VisibilityState,
   PaginationState,
   useReactTable,
   getCoreRowModel,
@@ -16,8 +15,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
-import { Search, UserRoundPlus, ListFilter, X, SlidersHorizontal } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Search, UserRoundPlus, ListFilter, X } from "lucide-react";
 import { columns, type User } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import {
@@ -83,7 +82,6 @@ export default function UsersPage() {
   const [selectedRoles, setSelectedRoles] = React.useState<Set<User['role']>>(new Set());
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -139,11 +137,9 @@ export default function UsersPage() {
     columns,
     state: {
       sorting,
-      columnVisibility,
       pagination,
     },
     onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -244,37 +240,7 @@ export default function UsersPage() {
             </Button>
           )}
         </div>
-        <div className="flex items-center">
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="gap-1">
-                    <SlidersHorizontal className="h-4 w-4" /> View
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[150px]">
-                    <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {table
-                    .getAllColumns()
-                    .filter(
-                        (column) =>
-                        typeof column.columnDef.accessorFn !== "undefined" && column.getCanHide()
-                    )
-                    .map((column) => {
-                        return (
-                        <DropdownMenuCheckboxItem
-                            key={column.id}
-                            className="capitalize"
-                            checked={column.getIsVisible()}
-                            onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                        >
-                            {column.id}
-                        </DropdownMenuCheckboxItem>
-                        )
-                    })}
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+        {/* "View" Dropdown for column visibility removed here */}
       </div>
 
       {activeFilterCount > 0 && (
@@ -314,5 +280,3 @@ export default function UsersPage() {
     </div>
   );
 }
-
-      
