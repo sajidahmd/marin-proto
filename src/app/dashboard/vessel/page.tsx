@@ -267,10 +267,19 @@ export default function VesselPage() {
 
             <div className="flex flex-col gap-1.5">
                 <Label htmlFor="eta-sort">Sort by ETA</Label>
-                <Select value={etaSort} onValueChange={(value) => setEtaSort(value as "earliest" | "latest" | "")}>
+                <Select 
+                  value={etaSort === "" ? "no_sort_selected" : etaSort} 
+                  onValueChange={(value) => {
+                    if (value === "no_sort_selected") {
+                      setEtaSort("");
+                    } else {
+                      setEtaSort(value as "earliest" | "latest");
+                    }
+                  }}
+                >
                     <SelectTrigger id="eta-sort" className="h-10"><SelectValue placeholder="Default" /></SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="">Default</SelectItem>
+                        <SelectItem value="no_sort_selected">Default</SelectItem>
                         <SelectItem value="earliest">Earliest First</SelectItem>
                         <SelectItem value="latest">Latest First</SelectItem>
                     </SelectContent>
@@ -365,5 +374,3 @@ export default function VesselPage() {
   );
 }
 
-
-    
