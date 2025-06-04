@@ -75,17 +75,53 @@ export function formatETADate(etaString?: string): string {
   try {
     const date = new Date(etaString);
     if (isNaN(date.getTime())) return 'Invalid Date';
-    return date.toLocaleString(undefined, {
-      year: 'numeric',
+
+    const options: Intl.DateTimeFormatOptions = {
       month: 'short',
       day: 'numeric',
-      hour: '2-digit',
+      year: 'numeric',
+      weekday: 'long',
+      hour: 'numeric', // Use 'numeric' for more natural hour display e.g., "9 PM" instead of "09 PM"
       minute: '2-digit',
+      hour12: true,
+    };
+    
+    // Parts extraction to reconstruct in the desired order: "Jul 22, 2025 (Tuesday) 9:30 PM"
+    const parts = new Intl.DateTimeFormat(undefined, options).formatToParts(date);
+    let month = '', day = '', year = '', weekday = '', hour = '', minute = '', dayPeriod = '';
+    
+    parts.forEach(part => {
+      switch (part.type) {
+        case 'month': month = part.value; break;
+        case 'day': day = part.value; break;
+        case 'year': year = part.value; break;
+        case 'weekday': weekday = part.value; break;
+        case 'hour': hour = part.value; break;
+        case 'minute': minute = part.value; break;
+        case 'dayPeriod': dayPeriod = part.value.toUpperCase(); break; // Ensure AM/PM is uppercase
+      }
     });
+
+    if (month && day && year && weekday && hour && minute && dayPeriod) {
+      return `${month} ${day}, ${year} (${weekday}) ${hour}:${minute} ${dayPeriod}`;
+    }
+    // Fallback to a simpler toLocaleString if parts aren't all found (shouldn't happen with valid options)
+    return date.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        weekday: 'long',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+    });
+
   } catch (error) {
+    console.error("Error formatting ETA date:", error);
     return 'Invalid Date';
   }
 }
+
 
 export const allVesselStatuses: VesselStatus[] = [
     'Underway',
@@ -109,3 +145,4 @@ export const allVesselTypeCategories: VesselTypeCategory[] = [
     'Other',
     'Unknown',
 ];
+
