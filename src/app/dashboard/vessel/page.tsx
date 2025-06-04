@@ -20,7 +20,7 @@ import { DataTable } from "@/components/ui/data-table";
 import VesselCard from "@/components/dashboard/vessel/VesselCard";
 import { createVesselColumns } from "./columns";
 import { getVesselStatusName, getVesselTypeCategory, allVesselTypeCategories, allVesselStatuses, type VesselStatus, type VesselTypeCategory } from '@/lib/vesselUtils';
-import { Search, ListFilter, LayoutGrid, List, SlidersHorizontal, X } from 'lucide-react';
+import { Search, ListFilter, LayoutGrid, List, SlidersHorizontal, X, Upload } from 'lucide-react'; // Added Upload icon
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -130,7 +130,7 @@ export default function VesselPage() {
     localStorage.setItem('vesselViewMode', viewMode);
   }, [viewMode]);
 
-  // this is
+  
   const uniqueDestinations = React.useMemo(() => {
     const destinations = new Set(vessels.map(v => v.DESTINATION).filter(Boolean) as string[]);
     return Array.from(destinations).sort();
@@ -320,7 +320,16 @@ export default function VesselPage() {
               <span className="text-sm text-muted-foreground">{viewMode === 'card' ? 'Card View' : 'List View'}</span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Button
+                variant="outline"
+                className="h-10"
+                onClick={() => console.log("Bulk Import clicked (visual only)")}
+                aria-label="Bulk Import Vessels"
+              >
+                <Upload className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Bulk Import</span>
+              </Button>
               {viewMode === 'list' && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
