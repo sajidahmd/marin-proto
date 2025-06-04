@@ -6,10 +6,14 @@ import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { Vessel } from "./page"; // Adjust path if page.tsx moves
+import type { Vessel } from "./page"; 
 import { getVesselStatusName, getVesselStatusColor, formatETADate, getVesselTypeCategory } from '@/lib/vesselUtils';
 
-export const createVesselColumns = (): ColumnDef<Vessel>[] => [
+interface VesselColumnsProps {
+  onOpenDetails: (vessel: Vessel) => void;
+}
+
+export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): ColumnDef<Vessel>[] => [
   {
     accessorKey: "NAME",
     header: ({ column }) => (
@@ -116,7 +120,7 @@ export const createVesselColumns = (): ColumnDef<Vessel>[] => [
         <Button 
           variant="outline" 
           size="sm"
-          onClick={() => console.log('View details for table row:', row.original.NAME)}
+          onClick={() => onOpenDetails(row.original)}
         >
           Details
         </Button>
@@ -126,3 +130,4 @@ export const createVesselColumns = (): ColumnDef<Vessel>[] => [
     enableHiding: false,
   },
 ];
+

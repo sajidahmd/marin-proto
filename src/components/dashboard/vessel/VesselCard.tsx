@@ -5,15 +5,17 @@ import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Vessel } from '@/app/dashboard/vessel/page'; // Adjust path as needed
-import { getVesselStatusName, getVesselStatusColor, formatETADate, getVesselTypeCategory } from '@/lib/vesselUtils';
+import type { Vessel } from '@/app/dashboard/vessel/page'; 
+import { getVesselStatusName, getVesselStatusColor, formatETADate, getVesselTypeCategory, type VesselTypeCategory } from '@/lib/vesselUtils';
 import { Thermometer, Gauge, Compass, Anchor, CalendarClock, Ship, Tag, MapPin } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 interface VesselCardProps {
   vessel: Vessel;
+  onOpenDetails: (vessel: Vessel) => void;
 }
 
-export default function VesselCard({ vessel }: VesselCardProps) {
+export default function VesselCard({ vessel, onOpenDetails }: VesselCardProps) {
   const statusName = getVesselStatusName(vessel.NAV_STATUS);
   const statusColor = getVesselStatusColor(vessel.NAV_STATUS);
   const vesselType = getVesselTypeCategory(vessel.TYPE);
@@ -89,15 +91,11 @@ export default function VesselCard({ vessel }: VesselCardProps) {
           variant="outline" 
           size="sm" 
           className="w-full" 
-          onClick={() => console.log('View details for:', vessel.NAME)}
+          onClick={() => onOpenDetails(vessel)}
         >
           View Details
         </Button>
       </CardFooter>
     </Card>
   );
-}
-
-function cn(...inputs: Array<string | undefined | null | boolean>): string {
-  return inputs.filter(Boolean).join(' ');
 }

@@ -1,0 +1,153 @@
+
+"use client";
+
+import * as React from "react";
+import Image from 'next/image';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import type { Vessel } from "@/app/dashboard/vessel/page";
+import { getVesselStatusName, getVesselTypeCategory, formatETADate } from "@/lib/vesselUtils";
+import { Globe, Ship as ShipIcon, CalendarClock, Gauge, Compass, MapPin, Tag, Fingerprint, Sailboat, Info } from 'lucide-react';
+
+interface VesselDetailsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  vessel: Vessel | null;
+}
+
+const DetailItem: React.FC<{ label: string; value?: string | number | null; icon?: React.ElementType; children?: React.ReactNode }> = ({ label, value, icon: Icon, children }) => (
+  <div className="flex items-start space-x-2">
+    {Icon && <Icon className="h-5 w-5 text-primary mt-0.5" />}
+    <div>
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      {value !== undefined && value !== null ? <p className="text-base text-foreground">{value}</p> : children}
+    </div>
+  </div>
+);
+
+const calculateEtaCountdown = (etaString?: string): string => {
+  if (!etaString) return "N/A";
+  const etaDate = new Date(etaString);
+  if (isNaN(etaDate.getTime())) return "Invalid Date";
+
+  const now = new Date();
+  let diff = etaDate.getTime() - now.getTime();
+
+  if (diff <= 0) return "Arrived / Past ETA";
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  diff -= days * (1000 * 60 * 60 * 24);
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  diff -= hours * (1000 * 60 * 60);
+  const minutes = Math.floor(diff / (1000 * 60));
+
+  let countdownStr = "";
+  if (days > 0) countdownStr += `${days}d `;
+  if (hours > 0) countdownStr += `${hours}h `;
+  if (minutes > 0 || (days === 0 && hours === 0)) countdownStr += `${minutes}m`;
+  
+  return countdownStr.trim() || "Approaching";
+};
+
+
+export default function VesselDetailsModal({ isOpen, onClose, vessel }: VesselDetailsModalProps) {
+  const [etaCountdown, setEtaCountdown] = React.useState<string>("Calculating...");
+
+  React.useEffect(() => {
+    if (isOpen && vessel?.ETA) {
+      setEtaCountdown(calculateEtaCountdown(vessel.ETA)); // Initial calculation
+      const intervalId = setInterval(() => {
+        setEtaCountdown(calculateEtaCountdown(vessel.ETA));
+      }, 60000); // Update every minute
+
+      return () => clearInterval(intervalId);
+    } else if (!isOpen) {
+      setEtaCountdown("Calculating..."); // Reset when modal closes
+    }
+  }, [isOpen, vessel?.ETA]);
+
+  if (!vessel) return null;
+
+  const vesselTypeDisplay = `${vessel.TYPE} (${getVesselTypeCategory(vessel.TYPE)})`;
+  const navStatusDisplay = getVesselStatusName(vessel.NAV_STATUS);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px] grid-rows-[auto_1fr_auto] p-0" onPointerDownOutside={(e) => {
+        if (e.target && (e.target as HTMLElement).hasAttribute('data-radix-dialog-overlay')) {
+          onClose();
+        } else {
+          e.preventDefault();
+        }
+      }}>
+        <DialogHeader className="p-6 pb-4">
+          <DialogTitle className="text-2xl">Vessel Details</DialogTitle>
+        </DialogHeader>
+        
+        <div className="px-6 pb-6 space-y-6 overflow-y-auto max-h-[70vh]">
+          {/* Header Section */}
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+            <div className="w-full sm:w-[150px] h-auto sm:h-[100px] rounded-md overflow-hidden border bg-muted flex-shrink-0">
+              <Image
+                src={`https://placehold.co/300x200.png`}
+                data-ai-hint={`${getVesselTypeCategory(vessel.TYPE).toLowerCase()} ship`}
+                alt={`Image of ${vessel.NAME}`}
+                width={300}
+                height={200}
+                className="object-cover w-full h-full"
+              />
+            </div>
+            <div className="space-y-2 flex-grow">
+              <h2 className="text-xl font-semibold text-foreground">{vessel.NAME}</h2>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                <DetailItem label="MMSI" value={vessel.MMSI} icon={Fingerprint}/>
+                <DetailItem label="IMO" value={vessel.IMO || 'N/A'} icon={Tag}/>
+                <DetailItem label="Call Sign" value={vessel.CALLSIGN || 'N/A'} icon={Info}/>
+                <DetailItem label="Type" value={vesselTypeDisplay} icon={Sailboat}/>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Real-Time Tracking Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground flex items-center">
+              <Globe className="h-5 w-5 mr-2 text-primary" />
+              Real-Time Tracking
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+              <DetailItem label="Position" value={`${vessel.LAT.toFixed(4)}°N, ${vessel.LON.toFixed(4)}°E`} icon={MapPin} />
+              <DetailItem label="Speed" value={`${vessel.SPEED !== undefined ? vessel.SPEED.toFixed(1) : 'N/A'} kn`} icon={Gauge}/>
+              <DetailItem label="Course" value={`${vessel.HEADING !== undefined ? vessel.HEADING : 'N/A'}°`} icon={Compass} />
+              <DetailItem label="Nav Status" value={navStatusDisplay} icon={ShipIcon} />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Voyage Information Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground flex items-center">
+              <ShipIcon className="h-5 w-5 mr-2 text-primary" />
+              Voyage Information
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+              <DetailItem label="Destination" value={vessel.DESTINATION || 'N/A'} icon={MapPin}/>
+              <DetailItem label="ETA" value={formatETADate(vessel.ETA)} icon={CalendarClock} />
+              <DetailItem label="Arriving In" value={etaCountdown} icon={CalendarClock}/>
+              <DetailItem label="Distance Rem." value={vessel.DISTANCE_REMAINING !== undefined ? `${vessel.DISTANCE_REMAINING} NM` : 'N/A'} icon={Gauge} />
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
