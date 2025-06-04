@@ -72,10 +72,11 @@ export default function VesselDetailsModal({ isOpen, onClose, vessel }: VesselDe
         }
       };
       updateEtaFields();
-      const intervalId = setInterval(updateEtaFields, 60000);
+      const intervalId = setInterval(updateEtaFields, 60000); // Update every minute
 
       return () => clearInterval(intervalId);
     } else if (!isOpen) {
+      // Reset when modal is closed or vessel is null
       setEtaCountdown("Calculating...");
       setFormattedDisplayEta(null);
     }
@@ -89,6 +90,8 @@ export default function VesselDetailsModal({ isOpen, onClose, vessel }: VesselDe
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] grid-rows-[auto_1fr_auto] p-0" onPointerDownOutside={(e) => {
+        // Ensure clicking on the overlay (backdrop) closes the modal
+        // but clicking inside the content does not.
         if (e.target && (e.target as HTMLElement).hasAttribute('data-radix-dialog-overlay')) {
           onClose();
         }
@@ -152,7 +155,7 @@ export default function VesselDetailsModal({ isOpen, onClose, vessel }: VesselDe
               <DetailItem label="Distance Rem." value={vessel.DISTANCE_REMAINING !== undefined ? `${vessel.DISTANCE_REMAINING} NM` : 'N/A'} icon={Gauge} />
             </div>
             <div className="mt-4 pt-2">
-              <Button variant="outline" size="sm" onClick={() => console.log('Set Alert clicked for vessel:', vessel.NAME)}>
+              <Button variant="default" size="sm" onClick={() => console.log('Set Alert clicked for vessel:', vessel.NAME)}>
                 <BellPlus className="mr-2 h-4 w-4" />
                 Set Alert
               </Button>
@@ -160,7 +163,7 @@ export default function VesselDetailsModal({ isOpen, onClose, vessel }: VesselDe
           </div>
         </div>
         <div className="p-6 pt-4 border-t flex justify-end">
-             <Button variant="outline" onClick={onClose}>Close</Button>
+             <Button variant="default" onClick={onClose}>Close</Button>
         </div>
       </DialogContent>
     </Dialog>
