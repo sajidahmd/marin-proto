@@ -1,22 +1,23 @@
 
 "use client";
 
-import * as React from 'react'; // Added React import for hooks
+import * as React from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Vessel } from '@/app/dashboard/vessel/page';
 import { getVesselStatusName, getVesselStatusColor, formatETADate, getVesselTypeCategory, type VesselTypeCategory } from '@/lib/vesselUtils';
-import { Gauge, Compass, Anchor, CalendarClock, Ship, Tag, MapPin } from 'lucide-react'; // Added Ship
+import { Gauge, Compass, Anchor, CalendarClock, Ship, Tag, MapPin, Edit as EditIcon } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 interface VesselCardProps {
   vessel: Vessel;
   onOpenDetails: (vessel: Vessel) => void;
+  onOpenEditModal: (vessel: Vessel) => void;
 }
 
-export default function VesselCard({ vessel, onOpenDetails }: VesselCardProps) {
+export default function VesselCard({ vessel, onOpenDetails, onOpenEditModal }: VesselCardProps) {
   const [clientFormattedEta, setClientFormattedEta] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -97,14 +98,22 @@ export default function VesselCard({ vessel, onOpenDetails }: VesselCardProps) {
             <span className="font-medium">Type:</span> {vesselType}
         </div>
       </CardContent>
-      <CardFooter className="p-4 border-t">
+      <CardFooter className="p-4 border-t flex space-x-2">
         <Button
           variant="outline"
           size="sm"
-          className="w-full"
+          className="flex-1 text-blue-600 border-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-900/50 dark:hover:text-blue-300"
+          onClick={() => onOpenEditModal(vessel)}
+        >
+          <EditIcon className="mr-1 h-3.5 w-3.5" /> Edit
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1"
           onClick={() => onOpenDetails(vessel)}
         >
-          View Details
+          Details
         </Button>
       </CardFooter>
     </Card>

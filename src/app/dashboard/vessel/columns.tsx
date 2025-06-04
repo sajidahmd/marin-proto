@@ -1,9 +1,9 @@
 
 "use client";
 
-import * as React from 'react'; // Added React import for hooks
+import * as React from 'react'; 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Edit as EditIcon } from "lucide-react"; // Renamed Edit to EditIcon
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ import { getVesselStatusName, getVesselStatusColor, formatETADate, getVesselType
 
 interface VesselColumnsProps {
   onOpenDetails: (vessel: Vessel) => void;
+  onOpenEditModal: (vessel: Vessel) => void;
 }
 
 const FormattedEtaCell = ({ etaString }: { etaString?: string }) => {
@@ -28,7 +29,7 @@ const FormattedEtaCell = ({ etaString }: { etaString?: string }) => {
   return <div className="whitespace-nowrap">{formattedDate || (etaString ? "Loading..." : "N/A")}</div>;
 };
 
-export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): ColumnDef<Vessel>[] => [
+export const createVesselColumns = ({ onOpenDetails, onOpenEditModal }: VesselColumnsProps): ColumnDef<Vessel>[] => [
   {
     accessorKey: "NAME",
     header: ({ column }) => (
@@ -131,7 +132,15 @@ export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): Colu
     id: "actions",
     header: () => <div className="text-right">Actions</div>,
     cell: ({ row }) => (
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-end space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onOpenEditModal(row.original)}
+          className="text-blue-600 border-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-900/50 dark:hover:text-blue-300"
+        >
+          <EditIcon className="mr-1 h-3.5 w-3.5" /> Edit
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -146,3 +155,4 @@ export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): Colu
     enableHiding: false,
   },
 ];
+

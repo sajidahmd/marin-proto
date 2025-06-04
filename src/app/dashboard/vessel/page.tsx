@@ -20,7 +20,7 @@ import { DataTable } from "@/components/ui/data-table";
 import VesselCard from "@/components/dashboard/vessel/VesselCard";
 import { createVesselColumns } from "./columns";
 import { getVesselStatusName, getVesselTypeCategory, allVesselTypeCategories, allVesselStatuses, type VesselStatus, type VesselTypeCategory } from '@/lib/vesselUtils';
-import { Search, ListFilter, LayoutGrid, List, SlidersHorizontal, X, Upload, Plus } from 'lucide-react';
+import { Search, ListFilter, LayoutGrid, List, SlidersHorizontal, X, Upload, Plus, Edit } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -35,6 +35,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import VesselDetailsModal from "@/components/dashboard/vessel/VesselDetailsModal";
 import AddVesselModal, { type AddVesselFormValues } from "@/components/dashboard/vessel/AddVesselModal";
+import EditVesselModal, { type EditVesselFormValues } from "@/components/dashboard/vessel/EditVesselModal";
 import { useToast } from "@/hooks/use-toast";
 
 
@@ -108,7 +109,11 @@ export default function VesselPage() {
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
   const [selectedVesselForDetails, setSelectedVesselForDetails] = React.useState<Vessel | null>(null);
+  
   const [isAddVesselModalOpen, setIsAddVesselModalOpen] = React.useState(false);
+  const [isEditVesselModalOpen, setIsEditVesselModalOpen] = React.useState(false);
+  const [currentVesselToEdit, setCurrentVesselToEdit] = React.useState<Vessel | null>(null);
+
 
   const handleOpenDetailsModal = (vessel: Vessel) => {
     setSelectedVesselForDetails(vessel);
@@ -131,7 +136,7 @@ export default function VesselPage() {
       LAT: 0, 
       LON: 0, 
       SPEED: 0,
-      NAV_STATUS: 5, // Moored by default
+      NAV_STATUS: 5, 
       HEADING: undefined,
       DESTINATION: "N/A", 
       ETA: undefined,
@@ -142,6 +147,38 @@ export default function VesselPage() {
     toast({
       title: "Vessel Added",
       description: `Vessel ${newVessel.NAME} has been successfully created.`,
+    });
+  };
+
+  const handleOpenEditModal = (vessel: Vessel) => {
+    setCurrentVesselToEdit(vessel);
+    setIsEditVesselModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setCurrentVesselToEdit(null);
+    setIsEditVesselModalOpen(false);
+  };
+
+  const handleUpdateVessel = (data: EditVesselFormValues) => {
+    if (!currentVesselToEdit) return;
+    setVessels(prevVessels =>
+      prevVessels.map(v =>
+        v.id === currentVesselToEdit.id
+          ? {
+              ...v,
+              MMSI: parseInt(data.mmsi, 10),
+              NAME: data.vesselName,
+              CALLSIGN: data.callSign,
+              TYPE: data.vesselType,
+            }
+          : v
+      )
+    );
+    handleCloseEditModal();
+    toast({
+      title: "Vessel Updated",
+      description: `Vessel ${data.vesselName} has been successfully updated.`,
     });
   };
 
@@ -216,7 +253,7 @@ export default function VesselPage() {
   }, [vessels, searchTerm, selectedType, selectedDestination, selectedStatus, etaSort]);
 
 
-  const columns = React.useMemo<ColumnDef<Vessel>[]>(() => createVesselColumns({onOpenDetails: handleOpenDetailsModal}), []);
+  const columns = React.useMemo<ColumnDef<Vessel>[]>(() => createVesselColumns({onOpenDetails: handleOpenDetailsModal, onOpenEditModal: handleOpenEditModal}), []);
 
   const table = useReactTable({
     data: filteredVessels,
@@ -364,7 +401,7 @@ export default function VesselPage() {
                 onClick={() => setIsAddVesselModalOpen(true)}
                 aria-label="Add New Vessel"
               >
-                <Plus className="h-4 w-4 sm:mr-1" /> {/* sm:mr-1 to give a little space when text is visible */}
+                <Plus className="h-4 w-4 sm:mr-1" />
                 <span className="hidden sm:inline">Add Vessel</span>
               </Button>
               {viewMode === 'list' && (
@@ -416,7 +453,7 @@ export default function VesselPage() {
         filteredVessels.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredVessels.map((vessel) => (
-              <VesselCard key={vessel.id} vessel={vessel} onOpenDetails={handleOpenDetailsModal} />
+              <VesselCard key={vessel.id} vessel={vessel} onOpenDetails={handleOpenDetailsModal} onOpenEditModal={handleOpenEditModal} />
             ))}
           </div>
         ) : (
@@ -443,6 +480,13 @@ export default function VesselPage() {
         onClose={() => setIsAddVesselModalOpen(false)}
         onSave={handleAddNewVessel}
       />
+      <EditVesselModal
+        isOpen={isEditVesselModalOpen}
+        onClose={handleCloseEditModal}
+        onSave={handleUpdateVessel}
+        vesselToEdit={currentVesselToEdit}
+      />
     </div>
   );
 }
+
