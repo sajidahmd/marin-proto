@@ -20,7 +20,7 @@ import { DataTable } from "@/components/ui/data-table";
 import VesselCard from "@/components/dashboard/vessel/VesselCard";
 import { createVesselColumns } from "./columns";
 import { getVesselStatusName, getVesselTypeCategory, allVesselTypeCategories, allVesselStatuses, type VesselStatus, type VesselTypeCategory } from '@/lib/vesselUtils';
-import { Search, ListFilter, LayoutGrid, List, SlidersHorizontal, X, Upload } from 'lucide-react'; // Added Upload icon
+import { Search, ListFilter, LayoutGrid, List, SlidersHorizontal, X, Upload, Plus } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -34,6 +34,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import VesselDetailsModal from "@/components/dashboard/vessel/VesselDetailsModal";
+import AddVesselModal, { type AddVesselFormValues } from "@/components/dashboard/vessel/AddVesselModal";
+import { useToast } from "@/hooks/use-toast";
 
 
 export interface Vessel {
@@ -89,7 +91,8 @@ const initialVesselData: Vessel[] = [
 
 
 export default function VesselPage() {
-  const [vessels] = React.useState<Vessel[]>(initialVesselData);
+  const { toast } = useToast();
+  const [vessels, setVessels] = React.useState<Vessel[]>(initialVesselData);
   const [filteredVessels, setFilteredVessels] = React.useState<Vessel[]>(initialVesselData);
   const [viewMode, setViewMode] = React.useState<'card' | 'list'>('card');
   
@@ -105,6 +108,7 @@ export default function VesselPage() {
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
   const [selectedVesselForDetails, setSelectedVesselForDetails] = React.useState<Vessel | null>(null);
+  const [isAddVesselModalOpen, setIsAddVesselModalOpen] = React.useState(false);
 
   const handleOpenDetailsModal = (vessel: Vessel) => {
     setSelectedVesselForDetails(vessel);
@@ -114,6 +118,31 @@ export default function VesselPage() {
   const handleCloseDetailsModal = () => {
     setIsDetailsModalOpen(false);
     setSelectedVesselForDetails(null);
+  };
+
+  const handleAddNewVessel = (data: AddVesselFormValues) => {
+    const newVessel: Vessel = {
+      id: `v_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      IMO: data.imoNumber ? parseInt(data.imoNumber.replace(/^(IMO\s?)/i, ''), 10) : undefined,
+      MMSI: parseInt(data.mmsi, 10),
+      NAME: data.vesselName,
+      CALLSIGN: data.callSign,
+      TYPE: data.vesselType,
+      LAT: 0, 
+      LON: 0, 
+      SPEED: 0,
+      NAV_STATUS: 5, // Moored by default
+      HEADING: undefined,
+      DESTINATION: "N/A", 
+      ETA: undefined,
+      DISTANCE_REMAINING: undefined,
+    };
+    setVessels(prevVessels => [newVessel, ...prevVessels]);
+    setIsAddVesselModalOpen(false);
+    toast({
+      title: "Vessel Added",
+      description: `Vessel ${newVessel.NAME} has been successfully created.`,
+    });
   };
 
 
@@ -330,6 +359,14 @@ export default function VesselPage() {
                 <Upload className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Bulk Import</span>
               </Button>
+              <Button
+                className="h-10 space-x-1"
+                onClick={() => setIsAddVesselModalOpen(true)}
+                aria-label="Add New Vessel"
+              >
+                <Plus className="h-4 w-4 sm:mr-1" /> {/* sm:mr-1 to give a little space when text is visible */}
+                <span className="hidden sm:inline">Add Vessel</span>
+              </Button>
               {viewMode === 'list' && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -401,7 +438,11 @@ export default function VesselPage() {
         onClose={handleCloseDetailsModal}
         vessel={selectedVesselForDetails}
       />
+      <AddVesselModal
+        isOpen={isAddVesselModalOpen}
+        onClose={() => setIsAddVesselModalOpen(false)}
+        onSave={handleAddNewVessel}
+      />
     </div>
   );
 }
-
