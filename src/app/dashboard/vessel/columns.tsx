@@ -1,17 +1,32 @@
 
 "use client";
 
+import * as React from 'react'; // Added React import for hooks
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { Vessel } from "./page"; 
+import type { Vessel } from "./page";
 import { getVesselStatusName, getVesselStatusColor, formatETADate, getVesselTypeCategory } from '@/lib/vesselUtils';
 
 interface VesselColumnsProps {
   onOpenDetails: (vessel: Vessel) => void;
 }
+
+const FormattedEtaCell = ({ etaString }: { etaString?: string }) => {
+  const [formattedDate, setFormattedDate] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (etaString) {
+      setFormattedDate(formatETADate(etaString));
+    } else {
+      setFormattedDate("N/A");
+    }
+  }, [etaString]);
+
+  return <div className="whitespace-nowrap">{formattedDate || (etaString ? "Loading..." : "N/A")}</div>;
+};
 
 export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): ColumnDef<Vessel>[] => [
   {
@@ -21,7 +36,7 @@ export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): Colu
         Name <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="font-medium">{row.original.NAME}</div>,
+    cell: ({ row }) => <div className="font-medium whitespace-nowrap">{row.original.NAME}</div>,
   },
   {
     accessorKey: "MMSI",
@@ -47,7 +62,7 @@ export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): Colu
         Type <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => getVesselTypeCategory(row.original.TYPE),
+    cell: ({ row }) => <div className="whitespace-nowrap">{getVesselTypeCategory(row.original.TYPE)}</div>,
     filterFn: (row, id, value) => {
       return value.includes(getVesselTypeCategory(row.getValue(id)))
     },
@@ -59,7 +74,7 @@ export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): Colu
         Speed <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => `${row.original.SPEED !== undefined ? row.original.SPEED.toFixed(1) : 'N/A'} kn`,
+    cell: ({ row }) => `${row.original.SPEED !== undefined ? row.original.SPEED.toFixed(1) : 'N/A'} knots`,
   },
   {
     accessorKey: "HEADING",
@@ -77,7 +92,7 @@ export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): Colu
         Destination <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => row.original.DESTINATION || "N/A",
+    cell: ({ row }) => <div className="whitespace-nowrap">{row.original.DESTINATION || "N/A"}</div>,
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
@@ -89,7 +104,7 @@ export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): Colu
         ETA <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => formatETADate(row.original.ETA),
+    cell: ({ row }) => <FormattedEtaCell etaString={row.original.ETA} />,
     sortingFn: 'datetime',
   },
   {
@@ -103,7 +118,7 @@ export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): Colu
       const statusName = getVesselStatusName(row.original.NAV_STATUS);
       const statusColor = getVesselStatusColor(row.original.NAV_STATUS);
       return (
-        <Badge className={cn("capitalize px-2 py-0.5 text-xs border", statusColor)}>
+        <Badge className={cn("capitalize px-2 py-0.5 text-xs border whitespace-nowrap", statusColor)}>
           {statusName}
         </Badge>
       );
@@ -117,10 +132,11 @@ export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): Colu
     header: () => <div className="text-right">Actions</div>,
     cell: ({ row }) => (
       <div className="flex items-center justify-end">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
           onClick={() => onOpenDetails(row.original)}
+          className="whitespace-nowrap"
         >
           Details
         </Button>
@@ -130,4 +146,3 @@ export const createVesselColumns = ({ onOpenDetails }: VesselColumnsProps): Colu
     enableHiding: false,
   },
 ];
-

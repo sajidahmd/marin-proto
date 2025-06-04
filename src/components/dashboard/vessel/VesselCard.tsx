@@ -1,11 +1,12 @@
 
 "use client";
 
+import * as React from 'react'; // Added React import for hooks
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Vessel } from '@/app/dashboard/vessel/page'; 
+import type { Vessel } from '@/app/dashboard/vessel/page';
 import { getVesselStatusName, getVesselStatusColor, formatETADate, getVesselTypeCategory, type VesselTypeCategory } from '@/lib/vesselUtils';
 import { Thermometer, Gauge, Compass, Anchor, CalendarClock, Ship, Tag, MapPin } from 'lucide-react';
 import { cn } from "@/lib/utils";
@@ -16,6 +17,16 @@ interface VesselCardProps {
 }
 
 export default function VesselCard({ vessel, onOpenDetails }: VesselCardProps) {
+  const [clientFormattedEta, setClientFormattedEta] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (vessel.ETA) {
+      setClientFormattedEta(formatETADate(vessel.ETA));
+    } else {
+      setClientFormattedEta("N/A");
+    }
+  }, [vessel.ETA]);
+
   const statusName = getVesselStatusName(vessel.NAV_STATUS);
   const statusColor = getVesselStatusColor(vessel.NAV_STATUS);
   const vesselType = getVesselTypeCategory(vessel.TYPE);
@@ -31,7 +42,7 @@ export default function VesselCard({ vessel, onOpenDetails }: VesselCardProps) {
       default: return 'ship ocean';
     }
   };
-  
+
   return (
     <Card className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="p-0 relative">
@@ -53,10 +64,10 @@ export default function VesselCard({ vessel, onOpenDetails }: VesselCardProps) {
         <CardTitle className="text-xl font-bold text-foreground truncate" title={vessel.NAME}>
           {vessel.NAME}
         </CardTitle>
-        
+
         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-1.5">
-            <Ship className="h-4 w-4 text-primary" />
+            <ShipIcon className="h-4 w-4 text-primary" />
             <span className="font-medium">MMSI:</span> {vessel.MMSI}
           </div>
           <div className="flex items-center gap-1.5">
@@ -65,7 +76,7 @@ export default function VesselCard({ vessel, onOpenDetails }: VesselCardProps) {
           </div>
           <div className="flex items-center gap-1.5">
             <Gauge className="h-4 w-4 text-primary" />
-            <span className="font-medium">Speed:</span> {vessel.SPEED !== undefined ? `${vessel.SPEED.toFixed(1)} kn` : 'N/A'}
+            <span className="font-medium">Speed:</span> {vessel.SPEED !== undefined ? `${vessel.SPEED.toFixed(1)} knots` : 'N/A'}
           </div>
           <div className="flex items-center gap-1.5">
             <Compass className="h-4 w-4 text-primary" />
@@ -79,7 +90,7 @@ export default function VesselCard({ vessel, onOpenDetails }: VesselCardProps) {
         </div>
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <CalendarClock className="h-4 w-4 text-primary" />
-            <span className="font-medium">ETA:</span> {formatETADate(vessel.ETA)}
+            <span className="font-medium">ETA:</span> {clientFormattedEta || (vessel.ETA ? 'Loading...' : 'N/A')}
         </div>
          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Anchor className="h-4 w-4 text-primary" />
@@ -87,10 +98,10 @@ export default function VesselCard({ vessel, onOpenDetails }: VesselCardProps) {
         </div>
       </CardContent>
       <CardFooter className="p-4 border-t">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="w-full" 
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full"
           onClick={() => onOpenDetails(vessel)}
         >
           View Details

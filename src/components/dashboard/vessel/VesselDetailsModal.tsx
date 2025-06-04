@@ -51,26 +51,35 @@ const calculateEtaCountdown = (etaString?: string): string => {
   if (days > 0) countdownStr += `${days}d `;
   if (hours > 0) countdownStr += `${hours}h `;
   if (minutes > 0 || (days === 0 && hours === 0)) countdownStr += `${minutes}m`;
-  
+
   return countdownStr.trim() || "Approaching";
 };
 
 
 export default function VesselDetailsModal({ isOpen, onClose, vessel }: VesselDetailsModalProps) {
   const [etaCountdown, setEtaCountdown] = React.useState<string>("Calculating...");
+  const [formattedDisplayEta, setFormattedDisplayEta] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (isOpen && vessel?.ETA) {
-      setEtaCountdown(calculateEtaCountdown(vessel.ETA)); // Initial calculation
-      const intervalId = setInterval(() => {
-        setEtaCountdown(calculateEtaCountdown(vessel.ETA));
-      }, 60000); // Update every minute
+    if (isOpen && vessel) {
+      const updateEtaFields = () => {
+        if (vessel.ETA) {
+          setEtaCountdown(calculateEtaCountdown(vessel.ETA));
+          setFormattedDisplayEta(formatETADate(vessel.ETA));
+        } else {
+          setEtaCountdown("N/A");
+          setFormattedDisplayEta("N/A");
+        }
+      };
+      updateEtaFields();
+      const intervalId = setInterval(updateEtaFields, 60000);
 
       return () => clearInterval(intervalId);
     } else if (!isOpen) {
-      setEtaCountdown("Calculating..."); // Reset when modal closes
+      setEtaCountdown("Calculating...");
+      setFormattedDisplayEta(null);
     }
-  }, [isOpen, vessel?.ETA]);
+  }, [isOpen, vessel]);
 
   if (!vessel) return null;
 
@@ -82,15 +91,13 @@ export default function VesselDetailsModal({ isOpen, onClose, vessel }: VesselDe
       <DialogContent className="sm:max-w-[600px] grid-rows-[auto_1fr_auto] p-0" onPointerDownOutside={(e) => {
         if (e.target && (e.target as HTMLElement).hasAttribute('data-radix-dialog-overlay')) {
           onClose();
-        } else {
-          // Allow clicks inside content
         }
       }}>
         <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle className="text-2xl font-semibold">{vessel.NAME || 'Vessel Details'}</DialogTitle>
         </DialogHeader>
-        
-        <div className="px-6 py-4 space-y-6 overflow-y-auto max-h-[calc(80vh-100px)]"> {/* Adjusted max-height */}
+
+        <div className="px-6 py-4 space-y-6 overflow-y-auto max-h-[calc(80vh-120px)]"> {/* Adjusted max-height slightly for footer */}
           {/* Header Info Section */}
           <div className="flex flex-col sm:flex-row items-start gap-6">
             <div className="w-full sm:w-[150px] h-auto sm:h-[100px] rounded-md overflow-hidden border bg-muted flex-shrink-0">
@@ -140,7 +147,7 @@ export default function VesselDetailsModal({ isOpen, onClose, vessel }: VesselDe
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
               <DetailItem label="Destination" value={vessel.DESTINATION || 'N/A'} icon={MapPin}/>
-              <DetailItem label="ETA" value={formatETADate(vessel.ETA)} icon={CalendarClock} />
+              <DetailItem label="ETA" value={formattedDisplayEta || (vessel.ETA ? "Loading..." : "N/A")} icon={CalendarClock} />
               <DetailItem label="Arriving In" value={etaCountdown} icon={CalendarClock}/>
               <DetailItem label="Distance Rem." value={vessel.DISTANCE_REMAINING !== undefined ? `${vessel.DISTANCE_REMAINING} NM` : 'N/A'} icon={Gauge} />
             </div>
@@ -152,9 +159,9 @@ export default function VesselDetailsModal({ isOpen, onClose, vessel }: VesselDe
             </div>
           </div>
         </div>
-        <DialogHeader className="p-6 pt-2 border-t"> {/* Mock footer or actions area */}
-             <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">Close</Button>
-        </DialogHeader>
+        <div className="p-6 pt-4 border-t flex justify-end">
+             <Button variant="outline" onClick={onClose}>Close</Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

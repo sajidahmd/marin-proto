@@ -130,6 +130,7 @@ export default function VesselPage() {
     localStorage.setItem('vesselViewMode', viewMode);
   }, [viewMode]);
 
+  // this is
   const uniqueDestinations = React.useMemo(() => {
     const destinations = new Set(vessels.map(v => v.DESTINATION).filter(Boolean) as string[]);
     return Array.from(destinations).sort();
