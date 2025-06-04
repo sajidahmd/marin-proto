@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Vessel } from '@/app/dashboard/vessel/page';
 import { getVesselStatusName, getVesselStatusColor, formatETADate, getVesselTypeCategory, type VesselTypeCategory } from '@/lib/vesselUtils';
-import { Thermometer, Gauge, Compass, Anchor, CalendarClock, Ship, Tag, MapPin } from 'lucide-react';
+import { Gauge, Compass, Anchor, CalendarClock, Ship, Tag, MapPin } from 'lucide-react'; // Added Ship
 import { cn } from "@/lib/utils";
 
 interface VesselCardProps {
@@ -67,7 +67,7 @@ export default function VesselCard({ vessel, onOpenDetails }: VesselCardProps) {
 
         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-1.5">
-            <ShipIcon className="h-4 w-4 text-primary" />
+            <Ship className="h-4 w-4 text-primary" />
             <span className="font-medium">MMSI:</span> {vessel.MMSI}
           </div>
           <div className="flex items-center gap-1.5">
