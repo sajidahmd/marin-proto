@@ -36,6 +36,7 @@ import { Badge } from "@/components/ui/badge";
 import VesselDetailsModal from "@/components/dashboard/vessel/VesselDetailsModal";
 import AddVesselModal, { type AddVesselFormValues } from "@/components/dashboard/vessel/AddVesselModal";
 import EditVesselModal, { type EditVesselFormValues } from "@/components/dashboard/vessel/EditVesselModal";
+import DeleteVesselDialog from "@/components/dashboard/vessel/DeleteVesselDialog";
 import { useToast } from "@/hooks/use-toast";
 
 
@@ -56,7 +57,6 @@ export interface Vessel {
   DISTANCE_REMAINING?: number; // Nautical miles
 }
 
-// Use fixed future dates relative to a hypothetical "today" (e.g., 2025-07-20) to ensure consistency
 const initialVesselData: Vessel[] = [
   { id: "v_1", MMSI: 211234567, IMO: 9123456, NAME: "MAERSK HANOI", CALLSIGN: "A8AB1", TYPE: 70, SPEED: 15.2, HEADING: 120, LAT: 34.0522, LON: -118.2437, DESTINATION: "BDCGP", ETA: "2025-07-21T12:00:00.000Z", NAV_STATUS: 0, DISTANCE_REMAINING: 1200 },
   { id: "v_2", MMSI: 366998877, IMO: 9234567, NAME: "MSC ISTANBUL", CALLSIGN: "WXYZ2", TYPE: 71, SPEED: 18.5, HEADING: 275, LAT: 25.276987, LON: 55.296249, DESTINATION: "HAMBURG", ETA: "2025-07-22T15:30:00.000Z", NAV_STATUS: 0, DISTANCE_REMAINING: 2500 },
@@ -113,6 +113,9 @@ export default function VesselPage() {
   const [isAddVesselModalOpen, setIsAddVesselModalOpen] = React.useState(false);
   const [isEditVesselModalOpen, setIsEditVesselModalOpen] = React.useState(false);
   const [currentVesselToEdit, setCurrentVesselToEdit] = React.useState<Vessel | null>(null);
+
+  const [isDeleteVesselDialogOpen, setIsDeleteVesselDialogOpen] = React.useState(false);
+  const [vesselToDelete, setVesselToDelete] = React.useState<Vessel | null>(null);
 
 
   const handleOpenDetailsModal = (vessel: Vessel) => {
@@ -182,8 +185,29 @@ export default function VesselPage() {
     });
   };
 
+  const handleOpenDeleteDialog = (vessel: Vessel) => {
+    setVesselToDelete(vessel);
+    setIsDeleteVesselDialogOpen(true);
+  };
 
-  // Load view mode from localStorage
+  const handleCloseDeleteDialog = () => {
+    setVesselToDelete(null);
+    setIsDeleteVesselDialogOpen(false);
+  };
+
+  const handleConfirmDeleteVessel = () => {
+    if (!vesselToDelete) return;
+    setVessels(prevVessels => prevVessels.filter(v => v.id !== vesselToDelete.id));
+    toast({
+      title: "Vessel Deleted",
+      description: `Vessel ${vesselToDelete.NAME} has been successfully deleted.`,
+      variant: "default",
+    });
+    handleCloseDeleteDialog();
+    handleCloseDetailsModal(); // Close details modal as well
+  };
+
+
   React.useEffect(() => {
     const savedViewMode = localStorage.getItem('vesselViewMode') as 'card' | 'list';
     if (savedViewMode) {
@@ -191,7 +215,6 @@ export default function VesselPage() {
     }
   }, []);
 
-  // Save view mode to localStorage
   React.useEffect(() => {
     localStorage.setItem('vesselViewMode', viewMode);
   }, [viewMode]);
@@ -203,11 +226,9 @@ export default function VesselPage() {
   }, [vessels]);
 
 
-  // Filtering and Sorting Logic
   React.useEffect(() => {
     let tempVessels = [...vessels];
 
-    // Search
     if (searchTerm) {
       tempVessels = tempVessels.filter(v =>
         v.NAME.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -216,22 +237,18 @@ export default function VesselPage() {
       );
     }
 
-    // Type Filter
     if (selectedType) {
       tempVessels = tempVessels.filter(v => getVesselTypeCategory(v.TYPE) === selectedType);
     }
 
-    // Destination Filter
     if (selectedDestination) {
       tempVessels = tempVessels.filter(v => v.DESTINATION === selectedDestination);
     }
 
-    // Status Filter
     if (selectedStatus) {
       tempVessels = tempVessels.filter(v => getVesselStatusName(v.NAV_STATUS) === selectedStatus);
     }
     
-    // ETA Sort
     if (etaSort && (etaSort === 'earliest' || etaSort === 'latest')) {
       tempVessels.sort((a, b) => {
         const dateA = a.ETA ? new Date(a.ETA).getTime() : 0;
@@ -253,7 +270,10 @@ export default function VesselPage() {
   }, [vessels, searchTerm, selectedType, selectedDestination, selectedStatus, etaSort]);
 
 
-  const columns = React.useMemo<ColumnDef<Vessel>[]>(() => createVesselColumns({onOpenDetails: handleOpenDetailsModal, onOpenEditModal: handleOpenEditModal}), []);
+  const columns = React.useMemo<ColumnDef<Vessel>[]>(() => createVesselColumns({onOpenDetails: handleOpenDetailsModal, onOpenEditModal: handleOpenEditModal}), 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [] // Dependencies array is empty as handlers don't change based on component state here.
+  );
 
   const table = useReactTable({
     data: filteredVessels,
@@ -292,7 +312,6 @@ export default function VesselPage() {
         </div>
       </div>
 
-      {/* Toolbar */}
       <Card>
         <CardContent className="p-4 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
@@ -448,7 +467,6 @@ export default function VesselPage() {
         </CardContent>
       </Card>
       
-      {/* Dynamic Content Area */}
       {viewMode === 'card' ? (
         filteredVessels.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -474,6 +492,7 @@ export default function VesselPage() {
         isOpen={isDetailsModalOpen}
         onClose={handleCloseDetailsModal}
         vessel={selectedVesselForDetails}
+        onInitiateDelete={handleOpenDeleteDialog}
       />
       <AddVesselModal
         isOpen={isAddVesselModalOpen}
@@ -485,6 +504,12 @@ export default function VesselPage() {
         onClose={handleCloseEditModal}
         onSave={handleUpdateVessel}
         vesselToEdit={currentVesselToEdit}
+      />
+      <DeleteVesselDialog
+        isOpen={isDeleteVesselDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        onConfirm={handleConfirmDeleteVessel}
+        vesselName={vesselToDelete?.NAME || ""}
       />
     </div>
   );
