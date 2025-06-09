@@ -1,12 +1,8 @@
-import type { Metadata } from 'next';
+
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
 import MembershipForm from '@/components/membership/MembershipForm';
 
-export const metadata: Metadata = {
-  title: 'Apply for Membership - Marine Marketing Solutions',
-  description: 'Apply for membership to join the Marine Marketing Solutions community and access exclusive resources.',
-};
 
 export default function ApplyForMembershipPage() {
   return (

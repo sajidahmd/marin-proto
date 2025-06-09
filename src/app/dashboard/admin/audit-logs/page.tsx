@@ -1,5 +1,4 @@
 
-"use client";
 
 import * as React from "react";
 import {
@@ -55,7 +54,7 @@ const initialAuditLogData: AuditLogEntry[] = [
 export default function AuditLogsPage() {
   const [auditLogs] = React.useState<AuditLogEntry[]>(initialAuditLogData);
   const [searchInput, setSearchInput] = React.useState("");
-  
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
@@ -110,7 +109,7 @@ export default function AuditLogsPage() {
             />
           </div>
         </div>
-        
+
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto gap-1">
@@ -130,7 +129,7 @@ export default function AuditLogsPage() {
                   if (column.id === 'timestamp') displayName = 'Timestamp';
                   if (column.id === 'user') displayName = 'User';
                   if (column.id === 'action') displayName = 'Action';
-                  
+
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}

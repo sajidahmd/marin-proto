@@ -1,5 +1,4 @@
 
-"use client";
 
 import * as React from "react";
 import {
@@ -86,11 +85,11 @@ export default function UsersPage() {
   const [searchInput, setSearchInput] = React.useState("");
   const [selectedStatuses, setSelectedStatuses] = React.useState<Set<User['status']>>(new Set());
   const [selectedRoles, setSelectedRoles] = React.useState<Set<User['role']>>(new Set());
-  
+
   const [isAddUserModalOpen, setIsAddUserModalOpen] = React.useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = React.useState(false);
   const [currentUserToEdit, setCurrentUserToEdit] = React.useState<User | null>(null);
-  
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
   const [userToDelete, setUserToDelete] = React.useState<User | null>(null);
 
@@ -156,7 +155,7 @@ export default function UsersPage() {
     setCurrentUserToEdit(null);
     setIsEditUserModalOpen(false);
   };
-  
+
   const handleUpdateUser = (data: EditUserFormValues) => {
     if (!currentUserToEdit) return;
 
@@ -180,7 +179,7 @@ export default function UsersPage() {
       description: `User ${data.firstName} ${data.lastName} has been successfully updated.`,
     });
   };
-  
+
   const handleOpenDeleteDialog = (userId: string) => {
     const user = users.find(u => u.id === userId);
     if (user) {
@@ -215,7 +214,7 @@ export default function UsersPage() {
 
   const filteredUsers = React.useMemo(() => {
     let currentUsers = users;
-    
+
     if (searchInput) {
         currentUsers = currentUsers.filter(user =>
             user.name.toLowerCase().includes(searchInput.toLowerCase()) ||

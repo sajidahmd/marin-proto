@@ -1,5 +1,4 @@
 
-"use client";
 
 import Link from 'next/link';
 import { SidebarTrigger } from '@/components/ui/sidebar';

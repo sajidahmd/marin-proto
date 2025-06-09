@@ -1,12 +1,7 @@
-
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import Link from "next/link";
-import { useRouter } from 'next/navigation'; // Import useRouter
-
+import {Link} from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -45,7 +40,7 @@ const defaultValues: Partial<SignInFormValues> = {
 
 export default function SignInForm() {
   const { toast } = useToast();
-  const router = useRouter(); // Initialize router
+  // const router = useRouter(); // Initialize router
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInFormSchema),
     defaultValues,
@@ -61,7 +56,7 @@ export default function SignInForm() {
       description: "Redirecting to dashboard...",
     });
     // form.reset(); // Optionally reset form
-    router.push('/dashboard'); // Redirect to dashboard
+    // router.push('/dashboard'); // Redirect to dashboard
   }
 
   return (
@@ -93,7 +88,7 @@ export default function SignInForm() {
                 <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel>Password</FormLabel>
-                    <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                    <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                       Forgot Password?
                     </Link>
                   </div>
@@ -112,7 +107,7 @@ export default function SignInForm() {
         </Form>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{' '}
-          <Link href="/apply-for-membership" className="text-primary hover:underline">
+          <Link to="/apply-for-membership" className="text-primary hover:underline">
             Apply for Membership
           </Link>
         </div>

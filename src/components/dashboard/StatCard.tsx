@@ -1,5 +1,4 @@
 
-"use client";
 
 import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,5 +28,3 @@ export default function StatCard({ title, value, icon: Icon, description }: Stat
     </Card>
   );
 }
-
-    

@@ -1,5 +1,4 @@
 
-"use client";
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -89,7 +88,7 @@ export default function DashboardSidebar() {
               </Link>
             </SidebarMenuItem>
           ))}
-          
+
           <SidebarMenuSub defaultOpen={pathname.startsWith('/dashboard/admin')}>
             <SidebarMenuButton 
               isSubTrigger 
@@ -153,5 +152,3 @@ export default function DashboardSidebar() {
     </Sidebar>
   );
 }
-
-    

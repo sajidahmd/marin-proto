@@ -1,4 +1,3 @@
-"use client";
 import { useState, useRef, useEffect, ChangeEvent, KeyboardEvent } from 'react';
 import { MessageSquare, X, Send } from 'lucide-react';
 
@@ -36,7 +35,7 @@ export default function LiveChatWidget() {
     if (text) {
       setMessages(prev => [...prev, { type: 'user', text }]);
       setInputValue('');
-      
+
       // Simulate bot response
       setTimeout(() => {
         setMessages(prev => [...prev, { type: 'bot', text: "Thank you for your message! A member of our team will get back to you shortly. In the meantime, feel free to explore our features or contact us directly." }]);
@@ -56,7 +55,7 @@ export default function LiveChatWidget() {
         <MessageSquare className="chat-icon" />
         <X className="close-icon" />
       </div>
-      
+
       <div className={`chat-popup ${isOpen ? 'active' : ''}`} id="chat-popup">
         <div className="chat-header">
           <h3>Live Chat</h3>

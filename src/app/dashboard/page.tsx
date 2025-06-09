@@ -1,5 +1,5 @@
 
-"use client";
+   
 
 import StatCard from '@/components/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

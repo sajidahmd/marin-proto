@@ -1,5 +1,4 @@
 
-"use client";
 
 import * as React from "react";
 import {
@@ -44,7 +43,7 @@ export default function RolesPage() {
   // const { toast } = useToast(); // Visual only, no toasts for button clicks yet
   const [roles] = React.useState<Role[]>(initialRolesData);
   const [searchInput, setSearchInput] = React.useState("");
-  
+
   const handleAddRole = () => {
     console.log("Add Role button clicked (visual only)");
     // toast({ title: "Add Role Clicked", description: "This is a visual placeholder for adding a new role." });
@@ -124,7 +123,7 @@ export default function RolesPage() {
             />
           </div>
         </div>
-        
+
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto gap-1">
@@ -143,7 +142,7 @@ export default function RolesPage() {
                   let displayName = column.id;
                   if (column.id === 'name') displayName = 'Role Name';
                   // Add more specific cases if other IDs are not user-friendly
-                  
+
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}

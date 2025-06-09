@@ -1,5 +1,4 @@
 
-"use client";
 
 import * as React from "react";
 import {
@@ -44,7 +43,7 @@ const initialPermissionsData: Permission[] = [
 export default function PermissionsPage() {
   const [permissions] = React.useState<Permission[]>(initialPermissionsData);
   const [searchInput, setSearchInput] = React.useState("");
-  
+
   const handleAddPermission = () => {
     console.log("Add Permission button clicked (visual only)");
   };
@@ -120,7 +119,7 @@ export default function PermissionsPage() {
             />
           </div>
         </div>
-        
+
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto gap-1">
@@ -137,7 +136,7 @@ export default function PermissionsPage() {
                 .map((column) => {
                   let displayName = column.id;
                   if (column.id === 'title') displayName = 'Permission Title';
-                  
+
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}

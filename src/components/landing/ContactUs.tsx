@@ -1,4 +1,3 @@
-"use client";
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle2, XCircle } from 'lucide-react';
 
@@ -52,7 +51,7 @@ export default function ContactUs() {
       newErrors.email = 'Please enter a valid email address';
     }
     if (!formData.message.trim()) newErrors.message = 'Message is required';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -84,12 +83,12 @@ export default function ContactUs() {
             Ready to transform your marine marketing operations? Contact us today to learn more about our innovative solutions.
           </p>
         </div>
-        
+
         <div className="contact-content">
           <div className="contact-info">
             <div className="info-card">
               <h3>Contact Information</h3>
-              
+
               <div className="contact-item">
                 <div className="contact-icon-wrapper cyan">
                   <Mail />
@@ -99,7 +98,7 @@ export default function ContactUs() {
                   <p>contact@marinemmarketing.com</p>
                 </div>
               </div>
-              
+
               <div className="contact-item">
                 <div className="contact-icon-wrapper blue">
                   <Phone />
@@ -109,7 +108,7 @@ export default function ContactUs() {
                   <p>+1 (555) 123-4567</p>
                 </div>
               </div>
-              
+
               <div className="contact-item">
                 <div className="contact-icon-wrapper cyan">
                   <MapPin />
@@ -120,7 +119,7 @@ export default function ContactUs() {
                 </div>
               </div>
             </div>
-            
+
             <div className="benefits-card">
               <h3>Why Choose Our System?</h3>
               <ul>
@@ -131,7 +130,7 @@ export default function ContactUs() {
               </ul>
             </div>
           </div>
-          
+
           <div className="contact-form">
             <form id="contact-form" onSubmit={handleSubmit} noValidate>
               <div className="form-row">
@@ -164,7 +163,7 @@ export default function ContactUs() {
                   {errors.lastName && <span className="error-message">{errors.lastName}</span>}
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="email">Email Address <span className="required">*</span></label>
                 <input 
@@ -179,7 +178,7 @@ export default function ContactUs() {
                 />
                 {errors.email && <span className="error-message">{errors.email}</span>}
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="company">Company (Optional)</label>
                 <input 
@@ -191,7 +190,7 @@ export default function ContactUs() {
                   onChange={handleChange}
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="message">Message <span className="required">*</span></label>
                 <textarea 
@@ -206,19 +205,19 @@ export default function ContactUs() {
                 ></textarea>
                 {errors.message && <span className="error-message">{errors.message}</span>}
               </div>
-              
+
               <button type="submit" className="btn btn-gradient">
                 Send Message
                 <Send className="btn-icon" />
               </button>
-              
+
               {formStatus === 'success' && (
                 <div className="form-message success-message show" id="success-message">
                   <CheckCircle2 />
                   <p>Thank you! Your message has been sent successfully. We&apos;ll get back to you soon.</p>
                 </div>
               )}
-              
+
               {formStatus === 'error' && Object.keys(errors).length > 0 && (
                  <div className="form-message error-message-box show" id="error-message-box">
                    <XCircle />

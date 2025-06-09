@@ -1,5 +1,5 @@
 import { Anchor, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import {Link} from 'react-router-dom';
 
 export default function Hero() {
   return (
@@ -22,12 +22,12 @@ export default function Hero() {
           </p>
           
           <div className="hero-buttons">
-            <Link href="/apply-for-membership" className="btn btn-primary">
+            <Link to="/apply-for-membership" className="btn btn-primary">
               Apply for Membership
               <ArrowRight className="btn-icon" />
             </Link>
             
-            <Link href="/sign-in" className="btn btn-outline">
+            <Link to="/sign-in" className="btn btn-outline">
               Sign In
             </Link>
           </div>

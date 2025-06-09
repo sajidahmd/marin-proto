@@ -1,5 +1,4 @@
 
-"use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Edit, Trash2, PlusCircle } from "lucide-react"

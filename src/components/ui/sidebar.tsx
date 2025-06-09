@@ -1,5 +1,4 @@
 
-"use client"
 
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
@@ -554,7 +553,7 @@ const SidebarMenuButton = React.forwardRef<
     const { isMobile, state } = useSidebar()
 
     const button = (
-      
+
       <Comp
         ref={ref}
         data-sidebar="menu-button"
