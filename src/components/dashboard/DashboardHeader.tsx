@@ -1,6 +1,5 @@
+import{Link} from "react-router-dom";
 
-
-import Link from 'next/link';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { PanelLeft, Home as HomeIcon, ChevronRight } from 'lucide-react';
 
@@ -15,7 +14,7 @@ export default function DashboardHeader() {
         <ol className="flex items-center gap-1.5">
           <li>
             <Link
-              href="/dashboard"
+              to="/dashboard"
               className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <HomeIcon className="h-4 w-4" />

@@ -1,6 +1,3 @@
-
-   
-
 import StatCard from '@/components/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Briefcase, Ship, Users, ListChecks, MessageSquare, UserPlus } from 'lucide-react';

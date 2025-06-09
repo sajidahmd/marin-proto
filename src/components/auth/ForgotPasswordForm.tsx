@@ -87,7 +87,7 @@ export default function ForgotPasswordForm() {
       description: "Your password has been updated. You can now sign in with your new password.",
     });
     resetForm.reset();
-    setStep(1); // Optionally go back to step 1 or redirect
+    setStep(1); // Optionally, go back to step 1 or redirect
     // router.push('/sign-in');
   }
 

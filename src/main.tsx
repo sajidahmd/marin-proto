@@ -6,6 +6,8 @@ import '@/app/globals.css'
 import ApplyForMembershipPage from "@/app/apply-for-membership/page";
 import SignInPage from "@/app/sign-in/page";
 import ForgotPasswordPage from "@/app/forgot-password/page";
+import DashboardLayout from "@/app/dashboard/layout";
+import DashboardHomePage from "@/app/dashboard/page";
 
 
 let router = createBrowserRouter([
@@ -19,7 +21,13 @@ let router = createBrowserRouter([
   },
   {path: 'apply-for-membership', Component: ApplyForMembershipPage},
   {path: 'sign-in', Component: SignInPage},
-  {path: 'forgot-password', Component: ForgotPasswordPage}
+  {path: 'forgot-password', Component: ForgotPasswordPage},
+  {
+    path: '/dashboard', Component: DashboardLayout,
+    children: [
+      {index: true, Component: DashboardHomePage}
+    ]
+  }
 ])
 
 createRoot(document.getElementById('root')!).render(
