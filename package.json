@@ -6,10 +6,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
-    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "typecheck": "tsc --noEmit"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
