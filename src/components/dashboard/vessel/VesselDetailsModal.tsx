@@ -1,8 +1,4 @@
-
-   
-
 import * as React from "react";
-import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -101,13 +97,14 @@ export default function VesselDetailsModal({ isOpen, onClose, vessel, onInitiate
         <div className="px-6 py-4 space-y-6 overflow-y-auto max-h-[calc(80vh-180px)]"> {/* Adjusted max-height for footer */}
           <div className="flex flex-col sm:flex-row items-start gap-6">
             <div className="w-full sm:w-[150px] h-auto sm:h-[100px] rounded-md overflow-hidden border bg-muted flex-shrink-0">
-              <Image
+              <img
                 src={`https://placehold.co/300x200.png`}
                 data-ai-hint={`${getVesselTypeCategory(vessel.TYPE).toLowerCase()} ship`}
                 alt={`Image of ${vessel.NAME}`}
                 width={300}
                 height={200}
                 className="object-cover w-full h-full"
+                // loading="lazy"
               />
             </div>
             <div className="space-y-1 flex-grow">

@@ -1,8 +1,4 @@
-
-   
-
 import * as React from 'react';
-import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,7 +43,7 @@ export default function VesselCard({ vessel, onOpenDetails, onOpenEditModal }: V
   return (
     <Card className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="p-0 relative">
-        <Image
+        <img
           src={`https://placehold.co/600x400.png`}
           data-ai-hint={getImageHint(vesselType)}
           alt={`Image of ${vessel.NAME}`}
